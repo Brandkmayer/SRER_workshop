@@ -1,0 +1,51 @@
+---
+title: "A_Step1.1 SRER_Utilization_UseAnalysis"
+author: "Brandon Mayer"
+date: "8/28/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse);library(rstatix);library(ggpubr)
+```
+
+Assess the normality of the data in R
+```{r}
+SiteUse<- read.csv("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/GY2021/SiteUse.csv")
+```
+
+```{r}
+SiteUse_long<- SiteUse %>%
+ pivot_longer(
+   cols = contains("Utilization"),
+   names_to = "Measurement",
+   values_to = "Value",
+   values_drop_na = TRUE
+ )
+
+SiteUse_long %>%
+  group_by(Visit, Pasture, SiteID) %>%
+  pairwise_t_test(
+    Value ~ Measurement, paired = TRUE, 
+    p.adjust.method = "bonferroni"
+    ) %>%
+  select(-df, -statistic, -p) # Remove details
+
+ggboxplot(
+  SiteUse_long, x = c("Visit"), y = "Value",
+  color = c("Visit","Measurement"), palette = "jco"
+  )
+
+p <- ggplot(SiteUse, aes(x=Percent.Ungrazed.Utilization)) + 
+  geom_density()+
+  facet_wrap( ~ Visit +Pasture)
+p
+```
+```{r}
+p<-qplot(sample = Percent.Ungrazed.Utilization, data = SiteUse, color=Pasture) + theme_classic()+
+  facet_wrap( ~ Visit)
+
+p
+```
+

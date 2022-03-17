@@ -1,0 +1,362 @@
+---
+title: "A_Step1_SRER_Utilization_FromLongForm"
+author: "Brandon Mayer"
+date: "8/25/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl);library(tidyverse);library(stringr);require(data.table)
+
+```
+
+```{r}
+path <- "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/data/2021/SRER_Use_VGS_Export_RAW_20210816_183142_copy.xlsx"
+sheets<-excel_sheets(path = path)
+paste0(strsplit(strsplit(sheets, ' ')[[2]], '')[[1]][1],strsplit(strsplit(sheets, ' ')[[2]], '')[[2]][1])
+
+LoadedSheets <- list()
+for (i in 1:length(sheets)) {
+  
+  LoadedSheets[[i]] <- read_excel(path, sheet =sheets[i])
+  names(LoadedSheets)[i]<- paste0(strsplit(strsplit(sheets, ' ')[[i]], '')[[1]][1],strsplit(strsplit(sheets, ' ')[[i]], '')[[2]][1])
+
+}
+
+```
+Combine Graze class first. 
+  -   Need to adjust IQ results to match the 0,10,30,50,70,90 Breakdown
+  -   Merge 2020 and 2021 data
+  -   Conditional renaming of cValue and cValue2 in IQ
+
+```{r}
+# unique(LoadedSheets[[1]]['SpeciesQualifier'])
+
+GC_C1<- LoadedSheets[[1]] %>% mutate(Pasture = word(Ancestry,-1))%>% select(-Ancestry,-ProtocolType,-ProtocolName, -EventType, -EventName, -SiteType, -SiteStatus, -FieldSymbol, -SpeciesQualifier, -FieldQualifier,-SubElement, -cParameter, -cParameter2, -cParameter3, -cValueCommon, -cValue2Common,-cValue3, -cValue3Common,-nValue2, -nValue3)
+# GC_C1$nValue[GC_C1$nValue == 5] <- 10  
+# GC_C1$nValue[GC_C1$nValue == 20] <- 30  
+# GC_C1$nValue[GC_C1$nValue == 40] <- 50  
+# GC_C1$nValue[GC_C1$nValue == 60] <- 70  
+# GC_C1$nValue[GC_C1$nValue == 80] <- 90  
+
+GC_C1 <- GC_C1 %>% select(Date, Pasture, SiteID, SpeciesSymbol, SpeciesName, CommonName, Transect, SampleNumber, cValue, cValue2, nValue)
+GC_C2 <- LoadedSheets[[3]]%>% mutate(Pasture = word(Ancestry,-1)) %>% select(-Ancestry,-ProtocolType,-ProtocolName, -EventType, -EventName, -SiteType, -SiteStatus, -FieldSymbol, -SpeciesQualifier, -FieldQualifier,-SubElement, -cParameter, -cParameter2, -cParameter3, -cValueCommon, -cValue2Common,-cValue,-cValue2,-cValue3, -cValue3Common,-nValue2, -nValue3) 
+
+TempSplit<- LoadedSheets[[2]]%>%mutate(Pasture = word(Ancestry,-1)) %>% split(LoadedSheets[[2]]$EventName)
+
+GC_C2_merge<-TempSplit[[1]] %>% select(Date,Pasture,SiteID,SpeciesSymbol, SpeciesName, Transect, SampleNumber) %>% group_by(Date, Pasture, SiteID) %>% mutate(sameplant = ifelse(SpeciesName=="Same Plant","Same","New"))
+GC_C2_merge<-split(GC_C2_merge,f = GC_C2_merge$sameplant) %>% reduce(full_join, by = c("Date","Pasture","SiteID", "Transect", "SampleNumber")) %>% select(-sameplant.x,-sameplant.y,-SpeciesName.x,-SpeciesName.y)
+GC_C2_merge$SpeciesSymbol.y<- GC_C2_merge$SpeciesSymbol.y %>% replace_na("OT_T5HQPQ15BM")
+GC_C2_merge <- GC_C2_merge %>% select(Date,Pasture, SiteID,Transect, SampleNumber,"cValue" =SpeciesSymbol.x, "cValue2" = SpeciesSymbol.y)
+
+GC_C1 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date, Pasture,SiteID);GC_C2_merge %>% group_by(Date,Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date,Pasture,SiteID)
+
+GC_C2_merge <- full_join(GC_C2, GC_C2_merge,by=c("Date","Pasture","SiteID","Transect", "SampleNumber"))
+GC_C2_merge$cValue<- GC_C2_merge$cValue %>% replace_na("OT_LHLW1HLE99")
+GC_C2_merge <- GC_C2_merge %>% select(Date, Pasture, SiteID, SpeciesSymbol, SpeciesName, CommonName, Transect, SampleNumber, cValue, cValue2, nValue)
+
+GC2021<- rbind(GC_C1, GC_C2_merge)%>% arrange(Date, Pasture)
+GC2021$Date <- as.Date.character(GC2021$Date,"%m/%d/%Y")
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>% arrange(Date, Pasture)
+
+```
+
+Second set of SRER data 
+
+```{r}
+path <- "C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/RAW_Data/GY2021/Bulk_Raw_Export/VGS-Export_RAW_20210420_174743_COPY.xlsx"
+sheets<-excel_sheets(path = path)
+# paste0(strsplit(strsplit(sheets, ' ')[[2]], '')[[1]][1],strsplit(strsplit(sheets, ' ')[[2]], '')[[2]][1])
+
+LoadedSheets <- list()
+for (i in 1:length(sheets)) {
+  
+  LoadedSheets[[i]] <- read_excel(path, sheet =sheets[i])
+  names(LoadedSheets)[i]<- paste0(gsub("[a-z]","", sheets[i]))
+
+}
+```
+
+```{r}
+GC_C1<- LoadedSheets[[1]] %>% mutate(Pasture = word(Ancestry,-1))%>% select(-Ancestry,-ProtocolType,-ProtocolName, -EventType, -EventName, -SiteType, -SiteStatus, -FieldSymbol, -SpeciesQualifier, -FieldQualifier,-SubElement, -Parameter, -Parameter2, -Parameter3, -CharValue,-CharValue2, -CharValue3,-Value2, -Value3)
+GC_C2<- LoadedSheets[[2]] %>% mutate(Pasture = word(Ancestry,-1))%>% select(-Ancestry,-ProtocolType,-ProtocolName, -EventType, -EventName,-FormName, -SiteType, -SiteStatus, -FieldSymbol, -SpeciesQualifier, -FieldQualifier,-Element,-SubElement, -Parameter, -Parameter2, -Parameter3, -CharValue3,-Value2, -Value3)
+
+TempSplit<- LoadedSheets[[3]]%>%mutate(Pasture = word(Ancestry,-1)) %>% split(LoadedSheets[[3]]$FormName)
+GC_C1_merge<-TempSplit[[2]] %>% select(Date,Pasture,SiteID,SpeciesSymbol, SpeciesName, Transect, SampleNumber) %>% group_by(Date, Pasture, SiteID) %>% mutate(sameplant = ifelse(SpeciesName=="Same Plant","Same","New")) 
+GC_C1_merge<-split(GC_C1_merge,f = GC_C1_merge$sameplant) %>% reduce(full_join, by = c("Date","Pasture","SiteID", "Transect", "SampleNumber")) %>% select(-sameplant.x,-sameplant.y,-SpeciesName.x,-SpeciesName.y) 
+GC_C1_merge$SpeciesSymbol.y<- GC_C1_merge$SpeciesSymbol.y %>% replace_na("OT_T5HQPQ15BM") 
+GC_C1_merge <- GC_C1_merge %>% select(Date,Pasture, SiteID,Transect, SampleNumber,"CharValue2" =SpeciesSymbol.x, "CharValue" = SpeciesSymbol.y)
+
+GC_C1_merge <- full_join(GC_C1, GC_C1_merge,by=c("Date","Pasture","SiteID","Transect", "SampleNumber"))
+GC_C1_merge$CharValue2<- GC_C1_merge$CharValue2 %>% replace_na("OT_LHLW1HLE99")
+GC_C1_merge <- GC_C1_merge %>% select(Date, Pasture, SiteID, SpeciesSymbol, SpeciesName, CommonName, Transect, SampleNumber, CharValue, CharValue2, Value)
+GC_C2 <- GC_C2 %>% select(Date, Pasture, SiteID, SpeciesSymbol, SpeciesName, CommonName, Transect, SampleNumber, CharValue, CharValue2, Value)
+
+GC2020<- rbind(GC_C1_merge, GC_C2)%>% arrange(Date, Pasture)
+GC2020$Date <- as.Date.character(GC2020$Date,"%m/%d/%Y")
+GC2020 %>% group_by(Date,Pasture,SiteID) %>% arrange(Date,Pasture,SiteID)
+GC2020 %>% group_by(Date,Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date,Pasture,SiteID)
+```
+Combine 2020 and 2021
+```{r}
+unique(GC2020$Pasture);unique(GC2021$Pasture)
+
+# 2020 has 2N and 6E, 2021 has 6B
+
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2N")%>% arrange(Date, Pasture)
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2N")%>% arrange(Date, Pasture)
+
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2S")%>% arrange(Date, Pasture)
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2S")%>% arrange(Date, Pasture)
+
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12C")%>% arrange(Date, Pasture)
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12C")%>% arrange(Date, Pasture)
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12A")%>% arrange(Date, Pasture)
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12A")%>% arrange(Date, Pasture)
+
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6A")%>% arrange(Date, Pasture)
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6A")%>% arrange(Date, Pasture)
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6B")%>% arrange(Date, Pasture)
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6B")%>% arrange(Date, Pasture)
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6D")%>% arrange(Date, Pasture)
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6D")%>% arrange(Date, Pasture)
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6E")%>% arrange(Date, Pasture)
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6E")%>% arrange(Date, Pasture)
+
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "15")%>% arrange(Date, Pasture)
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "15")%>% arrange(Date, Pasture)
+```
+
+```{r}
+anti_join(GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2N")%>% arrange(Date, Pasture),
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2N")%>% arrange(Date, Pasture))
+anti_join(GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2N")%>% arrange(Date, Pasture),
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2N")%>% arrange(Date, Pasture))
+
+anti_join(GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2S")%>% arrange(Date, Pasture),
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2S")%>% arrange(Date, Pasture))
+anti_join(GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2S")%>% arrange(Date, Pasture),
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2S")%>% arrange(Date, Pasture))
+
+anti_join(GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12A")%>% arrange(Date, Pasture),
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12A")%>% arrange(Date, Pasture))
+anti_join(GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12A")%>% arrange(Date, Pasture),
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12A")%>% arrange(Date, Pasture))
+
+anti_join(GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12C")%>% arrange(Date, Pasture),
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12C")%>% arrange(Date, Pasture))
+anti_join(GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12C")%>% arrange(Date, Pasture),
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12C")%>% arrange(Date, Pasture))
+
+anti_join(GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6D")%>% arrange(Date, Pasture),
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6D")%>% arrange(Date, Pasture))
+anti_join(GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6D")%>% arrange(Date, Pasture),
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6D")%>% arrange(Date, Pasture))
+anti_join(GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6E")%>% arrange(Date, Pasture),
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6E")%>% arrange(Date, Pasture))
+anti_join(GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6E")%>% arrange(Date, Pasture),
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "6E")%>% arrange(Date, Pasture))
+anti_join(GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "15")%>% arrange(Date, Pasture),
+GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "15")%>% arrange(Date, Pasture))
+anti_join(GC2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "15")%>% arrange(Date, Pasture),
+GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "15")%>% arrange(Date, Pasture))
+```
+
+
+
+```{r}
+GC2021<-GC2021 %>% filter(Pasture == "6A"|Pasture == "6B"|Pasture =="6D"|Pasture =="6E"|Pasture =="15")
+
+GC2020 <- GC2020 %>% filter(Date > lubridate::date("2020-10-01"))
+
+names(GC2020);names(GC2021)
+GC2020<- GC2020 %>% select(Date, Pasture,SiteID, SpeciesSymbol,SpeciesName, CommonName, SampleNumber,"cValue" = CharValue, "cValue2" = CharValue2, Value)
+GC2021 <- GC2021 %>% select(Date, Pasture,SiteID, SpeciesSymbol,SpeciesName, CommonName, SampleNumber,"cValue" = cValue, "cValue2" = cValue2, "Value"=nValue)
+
+GC_merge<- rbind(GC2021,GC2020)
+GC_merge %>% group_by(Date,Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date,Pasture,SiteID)
+
+```
+Cleaning up the merged GrazeClass Table
+Checking for wrong Graze Class labeling, removing NAs from Value ( NAs means an additional species was clicked while entering the sample),  Correcting values for cover class and same plant.
+
+```{r}
+# GC_merge%>% group_by(Visit,Date,Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date,Pasture,SiteID)
+GC_merge <- GC_merge %>% mutate("Visit"=ifelse(Date < lubridate::date("2021-05-01"), 1,2))%>% arrange(Date,Pasture,SiteID)
+GC_merge$Value[GC_merge$Value == 5] <- 10  
+GC_merge$Value[GC_merge$Value == 20] <- 30  
+GC_merge$Value[GC_merge$Value == 40] <- 50  
+GC_merge$Value[GC_merge$Value == 60] <- 70  
+GC_merge$Value[GC_merge$Value == 80] <- 90  
+sort(append(which(is.na(GC_merge$Value), arr.ind=TRUE),which(is.na(GC_merge$Value), arr.ind=TRUE)-1))
+GC_merge[sort(append(which(is.na(GC_merge$Value), arr.ind=TRUE),which(is.na(GC_merge$Value), arr.ind=TRUE)-1)),]
+GC_merge <- GC_merge[-sort(which(is.na(GC_merge$Value), arr.ind=TRUE)),]
+
+unique(GC_merge$cValue)
+GC_merge[sort(append(which(is.na(GC_merge$cValue2), arr.ind=TRUE),which(is.na(GC_merge$cValue2), arr.ind=TRUE)-1)),]
+GC_merge$cValue2[is.na(GC_merge$cValue2)] <- "OT_LHLW1HLE99"
+GC_merge[sort(append(which(is.na(GC_merge$cValue), arr.ind=TRUE),which(is.na(GC_merge$cValue), arr.ind=TRUE)-1)),]
+GC_merge$cValue[is.na(GC_merge$cValue)] <- "OT_T5HQPQ15BM"
+
+# Replacing Same Plant Codes
+GC_merge$cValue[GC_merge$cValue == "OT_T5HQPQ15BM"] <- "New Plant"
+GC_merge$cValue[GC_merge$cValue == "OT_9Y2M99QE16"] <- "Same Plant"
+# GC_merge$cValue[is.na(GC_merge$cValue)] <- "New Plant"
+
+# Replacing Cover types
+GC_merge$cValue2[GC_merge$cValue2 == "OT_LHLW1HLE99"] <- "NoCover"
+GC_merge$cValue2[GC_merge$cValue2 == "OT_ELITR7J4IA"] <- "Spiny Hackberry"
+GC_merge$cValue2[GC_merge$cValue2 == "OT_DJ94L5OCOQ"] <- "Wolfberry"
+GC_merge$cValue2[GC_merge$cValue2 == "OT_F5HUX00KQU"] <- "Cholla"
+GC_merge$cValue2[GC_merge$cValue2 == "OT_V1OH5IIHIY"] <- "Opuntia"
+GC_merge$cValue2[GC_merge$cValue2 == "OT_WYYW4A0LS8"] <- "Mesquite"
+GC_merge$cValue2[GC_merge$cValue2 == "OT_Q819OPSTYI"] <- "Fairy Duster"
+GC_merge$cValue2[GC_merge$cValue2 == "OT_GGD9XS128L"] <- "Catclaw"
+GC_merge$cValue2[GC_merge$cValue2 == "OT_2MDODF72TL"] <- "Range Ratany"
+GC_merge$cValue2[GC_merge$cValue2 == "OT_02AA7C7O4D"] <- "Grey Thorn"
+GC_merge %>% group_by(cValue2)%>% summarise("Count" = n())
+
+GC_merge <- GC_merge %>% mutate(Cover = ifelse(cValue2=="NoCover","No Cover","Cover"))
+GC_merge %>% group_by(Date,Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date,Pasture,SiteID)
+
+```
+
+```{r}
+final %>% group_by(Visit, Date, Pasture, SiteID) %>%
+  summarize(`Count Ungrazed Utilization` = sum(Value < 1),
+            `Count Total` = length(Value),
+            `Count Ungrazed Utilization Repeat` = sum(Value[Repeat=="New Plant"] < 1),
+            `Count Total Repeat` = length(Value[Repeat=="New Plant"]),
+            `Count Ungrazed Utilization Accessible` = sum(Value[Cover=="No Cover"] < 1),
+            `Count Total Accessible` = length(Value[Cover=="No Cover"]),
+            `Count Ungrazed Utilization Repeat&Accessible` = sum(Value[Repeat=="New Plant" & Cover=="No Cover"] < 1),
+            `Count Total Repeat&Accessible` = length(Value[Repeat=="New Plant" & Cover=="No Cover"]))
+mean(final$Value)
+mean(final$Value[final$Repeat=="New Plant"])
+(length(final$Value[final$Repeat=="New Plant"])*100)*100
+sum(final$Value[final$Cover=="No Cover"])/(length(final$Value[final$Cover=="No Cover"])*100)*100
+sum(final$Value[final$Repeat=="New Plant" & final$Cover=="No Cover"])/(length(final$Value[final$Repeat=="New Plant" & final$Cover=="No Cover"])*100)*100
+hist(final$Value)
+hist(final$Value[final$Repeat=="New Plant"])
+
+useaverage<- final %>% group_by(Visit, Date, Pasture, SiteID) %>%
+  summarize(`Percent Ungrazed Utilization` = round(79.9451-(0.8705*((sum(Value < 1)/(length(Value)))*100)), digits = 1),
+            `Percent Ungrazed Utilization Repeat` = round(79.9451-(0.8705*((sum(Value[Repeat=="New Plant"] < 1)/length(Value[Repeat=="New Plant"]))*100)),
+                                                           digits = 1),
+            `Percent Ungrazed Utilization Accessible` = round(79.9451-(0.8705*((sum(Value[Cover=="No Cover"] < 1)/length(Value[Cover=="No Cover"]))*100)),
+                                                           digits = 1),
+            `Percent Ungrazed Utilization Repeat&Accessible` = round(79.9451-(0.8705*((sum(Value[Repeat=="New Plant" & Cover=="No Cover"] < 1)/length(Value[Repeat=="New Plant" & Cover=="No Cover"]))*100)),digits = 1),
+            `Graze Class Utilization` = round(mean(Value), digits = 1),
+            `Graze Class Utilization Repeat` = round(mean(Value[Repeat=="New Plant"]), digits = 1),
+            `Graze Class Utilization Accessible` = round(mean(Value[Cover=="No Cover"]), digits = 1),
+            `Graze Class Utilization Repeat&Accessible` = round(mean(Value[Repeat=="New Plant" & Cover=="No Cover"]), digits = 1))
+            
+final<- GC_merge %>% select(Visit,Date, Pasture, SiteID, SpeciesSymbol,SpeciesName, CommonName, SampleNumber, "Repeat"=cValue, Cover,"Covertype" = cValue2, Value)
+useaverage <- final %>% group_by(Visit, Date, Pasture, SiteID) %>%
+  summarize(`Percent Ungrazed Utilization` = round(79.9451-(0.8705*sum(Value < 1)), digits = 1),
+            `Percent Ungrazed Utilization Repeat` = round(79.9451-(0.8705*sum(Value[Repeat=="New Plant"] < 1)),
+                                                           digits = 1),
+            `Percent Ungrazed Utilization Accessible` = round(79.9451-(0.8705*sum(Value[Cover=="No Cover"] < 1)),
+                                                           digits = 1),
+            `Percent Ungrazed Utilization Repeat&Accessible` = round(79.9451-(0.8705*sum(Value[Repeat=="New Plant" & Cover=="No Cover"] < 1)),
+                                                           digits = 1),
+            `Graze Class Utilization` = round(sum(Value)/sum(Value > 0), digits = 1),
+            `Graze Class Utilization Repeat` = round(sum(Value[Repeat=="New Plant"])/sum(Value[Repeat=="New Plant"] > 0), digits = 1),
+            `Graze Class Utilization Accessible` = round(sum(Value[Cover=="No Cover"])/sum(Value[Cover=="No Cover"] > 0), digits = 1),
+            `Graze Class Utilization Repeat&Accessible` = round(sum(Value[Repeat=="New Plant" & Cover=="No Cover"])/sum(Value[Repeat=="New Plant" & Cover=="No Cover"] > 0), digits = 1)
+            )
+
+path <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", "GY2021/", sep="")
+# write for use in ArcGIS 
+write.csv(x = useaverage, file = paste(path, "SiteUse.csv",sep = ""), row.names=FALSE)
+```
+
+
+```{r}
+sitelocations <- read.csv("C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/SiteLocations/NewOld_Merge.csv")
+sitelocations<- sitelocations %>% select(Pasture, "SiteID" =Sites, X, Y,LineField)
+
+useaverage <- read.csv("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/GY2021/SiteUse.csv")
+
+useaverage2pivot <- useaverage %>% left_join(sitelocations, by = c("Pasture", "SiteID")) %>% ungroup()%>% select(Visit,Pasture, SiteID, LineField, X, Y,PGMeasure=Percent.Ungrazed.Utilization, GCMeasure =Graze.Class.Utilization,PGMeasureAdjusted=Percent.Ungrazed.Utilization.Repeat.Accessible, GCMeasureAdjusted =Graze.Class.Utilization.Repeat.Accessible)
+MultiVisit_useaverage<- useaverage2pivot%>% pivot_wider(names_from = Visit, values_from = c("PGMeasure","GCMeasure")) %>% mutate("PGMax"=pmax(PGMeasure_1, PGMeasure_2,na.rm=TRUE), "GCMax"=pmax(GCMeasure_1, GCMeasure_2,na.rm=TRUE), "PGDiff"=ifelse(is.na(PGMeasure_2),PGMeasure_1,PGMeasure_2) -ifelse(is.na(PGMeasure_1),PGMeasure_2,PGMeasure_1),"GCDiff"=ifelse(is.na(GCMeasure_2),GCMeasure_1,GCMeasure_2) -ifelse(is.na(GCMeasure_1),GCMeasure_2,GCMeasure_1))
+
+write.csv(x = MultiVisit_useaverage, file = paste(path, "MultiVisit_useaverage.csv",sep = ""), row.names=FALSE)
+
+```
+```{r}
+UseEstimates<- useaverage %>% left_join(sitelocations, by = c("Pasture", "SiteID")) %>% ungroup()%>% select(Date,Pasture, SiteID, LineField,PGMeasure=Percent.Ungrazed.Utilization, PGMeasureAdjusted=Percent.Ungrazed.Utilization.Repeat.Accessible) %>% arrange(Pasture,LineField, Date) %>% select(-LineField)
+# write.csv(x = UseEstimates, file = paste(path, "UseEstimates.csv",sep = ""), row.names=FALSE)
+PastureUseEstimates<- useaverage %>% group_by(Visit, Pasture) %>% summarise(Average= round(mean(Percent.Ungrazed.Utilization),digits = 1)) %>% pivot_wider(names_from = Visit,values_from =Average) 
+colnames(PastureUseEstimates)<- c("Pasture","Rotation North (%)","Rotation South (%)")
+# write.csv(x = PastureUseEstimates, file = paste(path, "PastureUseEstimates.csv",sep = ""), row.names=FALSE)
+
+```
+
+
+--------------------------------------------------------------------Species Specific Analysis------------------------------------------------------------ 
+
+```{r}
+
+final[sort(append(which(is.na(final), arr.ind=TRUE),which(is.na(final), arr.ind=TRUE)-1)),]
+
+# top species use 
+Speciesuseaverage <- final %>% group_by(Visit,Date,Pasture, SiteID, SpeciesName) %>% summarize(count = n(), mean = round(mean(Value)))
+SpeciesuseaverageSkipSPC <- final %>% group_by(Pasture, SiteID, SpeciesName) %>% summarize(count = n(), mean = round(mean(Value[Repeat=="New Plant" & Cover=="No Cover"])))
+
+# Speciesuseaverage[sort(append(which(is.na(Speciesuseaverage), arr.ind=TRUE),which(is.na(Speciesuseaverage), arr.ind=TRUE)-1)),]
+
+
+d <- data.table(Speciesuseaverage, key="SiteID")
+d.out <- d[, .SD[mean %in% tail(sort(unique(mean)), 3)], by=SiteID]
+d.out <- d.out[order(d.out$SiteID,d.out$mean,decreasing = F)][order(d.out$SiteID,decreasing = T)]
+d.out <- d.out %>%group_by(Pasture, SiteID) %>% arrange(Date, mean) 
+split(d.out, f = d.out$Visit) %>% reduce(left_join, by = c("Pasture","SiteID"))
+
+setnames(d.out, old = 'mean', 'Mean Use (%)')
+setnames(d.out, old = 'count', 'Percent of Count (%)') 
+write.csv(x = d.out, file = paste(path, "AllSpeciesUse.csv",sep = ""), row.names=FALSE)
+```
+```{r}
+# Write to append to final document
+SiteUseMergeTopSpeciesUse <- left_join(useaverage, d.out, by = c("SiteID"))
+
+UseByTransect <- SiteUseMergeTopSpeciesUse %>% mutate(Transect=mapply(function(x,y)gsub(x,"",y) ,gsub(" ", "|",Pasture),SiteID)) %>%
+  select(Pasture, Transect, Date, `Percent Ungrazed Utilization`,"Top Species Used" = SpeciesName, `Percent of Count (%)`, `Mean Use (%)`) 
+UseByTransect <- UseByTransect[order(UseByTransect$Pasture,UseByTransect$Transect,decreasing = F),]
+write.csv(x = UseByTransect, file = paste(path, "SiteUseByTransect.csv",sep = ""), row.names=FALSE)
+
+```
+
+
+```{r}
+# Percentage of Use by Pasture
+pasture_average <- useaverage %>% group_by(Pasture) %>% summarize(year = round(mean(`Percent Ungrazed Utilization`))) 
+year <- "GY2021"
+data.table::setnames(pasture_average, old = "year", gsub("[/]", "", year))
+write.csv(x = pasture_average, file = paste(path, "PastureUse.csv",sep = ""), row.names=FALSE)
+```
+
+
+```{r}
+# count, mean - median, and proportion of the use at the site
+group_by(Speciesuseaverage,SiteID) %>% group_by(SiteID) %>%
+  mutate(pmean=round((count/sum(count))*mean(mean)))
+
+PastureSpeciesUse <- final %>% group_by(Pasture, SpeciesName) %>% summarize(count = n(), mean = round(mean(Value[Repeat=="New Plant" & Cover=="No Cover"]))) %>% mutate(Percent = round(count/sum(count)*100))
+P <- data.table(PastureSpeciesUse, key="Pasture")
+P.out <- P[, .SD[count %in% tail(sort(unique(count)), 3)], by=Pasture]
+P.out <- P.out[order(P.out$Pasture,P.out$count,decreasing = T)][order(P.out$Pasture,decreasing = T)]
+
+setnames(P.out, old = 'mean', 'Mean Use (%)');setnames(P.out, old = 'count', 'Total Count');setnames(P.out, old = 'Percent', 'Percent Count (%)')
+P.out
+write.csv(x = P.out, file = paste(path, "CommonSpeciesUse.csv",sep = ""), row.names=FALSE)
+
+```
+
+```{r}
+useaverage %>% filter(Visit == 2) %>% filter(!grepl("A",SiteID))
+```
+
+

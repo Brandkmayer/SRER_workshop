@@ -1,0 +1,112 @@
+---
+title: "FileClean_Separeate"
+author: "Brandon Mayer"
+date: "12/28/2020"
+output: html_document
+---
+This file includes an extra step in setup for the utilization analysis process. 
+This will include errors such as correcting: 
+- metric systems
+- wrongly entered plant names
+
+Corrected folders will saved as csv's for final analysis 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(stringr)
+```
+
+# Upload file into R 
+```{r, include=FALSE}
+# Navigate to Utilization year through the "go to director" option in the files tab. 
+# Paste in consule once prompted by "readline.
+print("Paste below V")
+path<- gsub("\\\\", "/", readline())
+```
+Choose a pasture folder that's been completed. This folder, and all the contents 
+Will be broken down into csv's of each transect and event and stored in a processed filer 
+
+```{r }
+Completed_pasture_folder <- "12C"
+```
+
+Breaks up te folder by sheet and stores them in the cleaned_data folder 
+```{r pressure, echo=FALSE}
+
+FolderPath<-paste0(path,"/",Completed_pasture_folder) 
+(file.list <- list.files(path = FolderPath, pattern='*.xlsx',full.names = T))
+finalfolder<-gsub("data","Cleaned_Data",FolderPath)
+dir.create(finalfolder)
+
+for (i in file.list) {
+  path_to_xlsx <-i
+  # path_to_xlsx <- "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/data/2021/12C/12C1.xlsx"
+  metadata <- readxl::read_excel(path_to_xlsx, sheet = 1)
+  Pasture <- gsub(" ", "", sub('-.*', '\\1',sub('.*>', '\\1', metadata[1,1])), fixed = TRUE)
+  # When processing 2S check into adding date to each file name
+  #                                                                                               Look---V
+  # date <- format(strptime(as.character(gsub(" ","",sub('.*:', '\\1', metadata[2,2]))), "%m/%d/%Y"), "%Y%m%d")
+  
+  Transect <- gsub(" ", "", gsub(Pasture,"",str_replace(metadata[1,1], '.+-(.+)', '\\1')))
+  base <- paste0(Pasture,"_",Transect)
+  sheet_names <- readxl::excel_sheets(path_to_xlsx)[1:3]
+  # sheet_names <- readxl::excel_sheets(path_to_xlsx)[2:4]
+  # base <- gsub("\\..*","",basename(path_to_xlsx))
+  for (j in sheet_names) {
+    # j <- sheet_names[2]
+    data <- readxl::read_excel(path_to_xlsx, sheet=j)
+    if (j == "Metadata") {
+      name <- "Meta"
+    }else if (j == "Grazed class") {
+      name <- "GC"
+    }else{
+      name <- "SH"
+    }
+    write.csv(data, file=paste0(finalfolder,"/",base,"_",name,".csv"))
+  }
+}
+```
+
+Make a list of dates for each transect
+This will correspond with the day utilization was collected for comparisson to when cattle were moved out of the site. 
+```{r, include=FALSE}
+(Meta_files <- list.files(path = finalfolder, pattern='Meta',full.names = T))
+results <- data.frame(matrix(NA, nrow = length(Meta_files), 
+                                 ncol = length(seq(1:2))))
+for (i in 1:length(Meta_files)) {
+  # i <- "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/Cleaned_Data/2020/12C/12C_10A_Meta.csv"
+  metadata <- read.csv(Meta_files[i])
+  Pasture <- gsub(" ", "", sub('-.*', '\\1',sub('.*>', '\\1', metadata[1,2])), fixed = TRUE)
+  Transect <- gsub(" ", "", gsub(Pasture,"",str_replace(metadata[1,2], '.+-(.+)', '\\1')))
+  date <- format(strptime(as.character(gsub(" ","",sub('.*:', '\\1', metadata[2,2]))), "%m/%d/%Y"), "%Y-%m-%d")
+  base <- paste0(Pasture,"_",Transect)
+  results[i,] <- c(base,date)
+  names(results) <- c("Sites", "Date")
+  }
+write.csv(results, file=paste0(finalfolder,"/",Pasture,"_UseMeasurementdates",".csv"))
+```
+
+If there are errors with measruements (measuring in inches instead of cm) you can select the files you need from the "_SH" tagged files and correct the heights in those fodlers only. Then you can rewrite the files afterwrads. 
+```{r}
+SH<- data.frame(files = list.files(finalfolder, pattern = "SH",full.names = T))
+listread <- SH[SH$files %in% c("C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/Cleaned_Data/2020/12C/12C_2_SH.csv",
+                   "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/Cleaned_Data/2020/12C/12C_4_SH.csv",
+                   "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/Cleaned_Data/2020/12C/12C_7A_SH.csv",
+                   "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/Cleaned_Data/2020/12C/12C_13A_SH.csv"), ]
+ldf <- lapply(listread, read.csv)
+
+# inch to cm conversion is 2.54
+for (i in 1:length(ldf)) {
+  ldf[[i]][["Height"]] <- ldf[[i]][["Height"]]*2.54
+}
+# Names need to be added alphabeltically 
+names(ldf) <- c("C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/Cleaned_Data/2020/12C/12C_13A_SH.csv",
+                   "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/Cleaned_Data/2020/12C/12C_2_SH.csv",
+                   "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/Cleaned_Data/2020/12C/12C_4_SH.csv",
+                   "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/Cleaned_Data/2020/12C/12C_7A_SH.csv") 
+
+for(i in names(ldf)){
+  write.csv(ldf[[i]], paste0(i))
+}
+```
+

@@ -1,0 +1,401 @@
+"","Species/Category Name","Species/Category Code","Qualifier","Transect","Sample","Height"
+"1","Setaria macrostachya","SEMA5",NA,1,1,17
+"2","Setaria macrostachya","SEMA5",NA,1,1,8
+"3","Setaria macrostachya","SEMA5",NA,1,1,10
+"4","Setaria macrostachya","SEMA5",NA,1,1,19
+"5","Setaria macrostachya","SEMA5",NA,1,2,17
+"6","Setaria macrostachya","SEMA5",NA,1,2,10
+"7","Setaria macrostachya","SEMA5",NA,1,2,8
+"8","Setaria macrostachya","SEMA5",NA,1,2,19
+"9","Aristida","ARIST",NA,1,3,7
+"10","Aristida","ARIST",NA,1,3,12
+"11","Aristida","ARIST",NA,1,3,10
+"12","Aristida","ARIST",NA,1,3,9
+"13","Aristida","ARIST",NA,1,4,7
+"14","Aristida","ARIST",NA,1,4,11
+"15","Aristida","ARIST",NA,1,4,8
+"16","Aristida","ARIST",NA,1,4,4
+"17","Setaria macrostachya","SEMA5",NA,1,5,3
+"18","Setaria macrostachya","SEMA5",NA,1,5,3
+"19","Setaria macrostachya","SEMA5",NA,1,5,4
+"20","Setaria macrostachya","SEMA5",NA,1,5,5
+"21","Setaria macrostachya","SEMA5",NA,1,6,3
+"22","Setaria macrostachya","SEMA5",NA,1,6,3
+"23","Setaria macrostachya","SEMA5",NA,1,6,4
+"24","Setaria macrostachya","SEMA5",NA,1,6,5
+"25","Muhlenbergia porteri","MUPO2",NA,1,7,12
+"26","Muhlenbergia porteri","MUPO2",NA,1,7,9
+"27","Muhlenbergia porteri","MUPO2",NA,1,7,8
+"28","Muhlenbergia porteri","MUPO2",NA,1,7,14
+"29","Muhlenbergia porteri","MUPO2",NA,1,8,10
+"30","Muhlenbergia porteri","MUPO2",NA,1,8,10
+"31","Muhlenbergia porteri","MUPO2",NA,1,8,15
+"32","Muhlenbergia porteri","MUPO2",NA,1,8,5
+"33","Digitaria californica","DICA8",NA,1,9,11
+"34","Digitaria californica","DICA8",NA,1,9,11
+"35","Digitaria californica","DICA8",NA,1,9,7
+"36","Digitaria californica","DICA8",NA,1,9,5
+"37","Digitaria californica","DICA8",NA,1,10,11
+"38","Digitaria californica","DICA8",NA,1,10,11
+"39","Digitaria californica","DICA8",NA,1,10,7
+"40","Digitaria californica","DICA8",NA,1,10,5
+"41","Muhlenbergia porteri","MUPO2",NA,1,11,33
+"42","Muhlenbergia porteri","MUPO2",NA,1,11,21
+"43","Muhlenbergia porteri","MUPO2",NA,1,11,19
+"44","Muhlenbergia porteri","MUPO2",NA,1,11,12
+"45","Muhlenbergia porteri","MUPO2",NA,1,12,20
+"46","Muhlenbergia porteri","MUPO2",NA,1,12,15
+"47","Muhlenbergia porteri","MUPO2",NA,1,12,23
+"48","Muhlenbergia porteri","MUPO2",NA,1,12,31
+"49","Eragrostis lehmanniana","ERLE",NA,1,13,10
+"50","Eragrostis lehmanniana","ERLE",NA,1,13,9
+"51","Eragrostis lehmanniana","ERLE",NA,1,13,11
+"52","Eragrostis lehmanniana","ERLE",NA,1,13,8
+"53","Eragrostis lehmanniana","ERLE",NA,1,14,10
+"54","Eragrostis lehmanniana","ERLE",NA,1,14,9
+"55","Eragrostis lehmanniana","ERLE",NA,1,14,11
+"56","Eragrostis lehmanniana","ERLE",NA,1,14,8
+"57","Digitaria californica","DICA8",NA,1,15,7
+"58","Digitaria californica","DICA8",NA,1,15,4
+"59","Digitaria californica","DICA8",NA,1,15,9
+"60","Digitaria californica","DICA8",NA,1,15,4
+"61","Muhlenbergia porteri","MUPO2",NA,1,16,7
+"62","Muhlenbergia porteri","MUPO2",NA,1,16,8
+"63","Muhlenbergia porteri","MUPO2",NA,1,16,6
+"64","Muhlenbergia porteri","MUPO2",NA,1,16,6
+"65","Muhlenbergia porteri","MUPO2",NA,1,17,17
+"66","Muhlenbergia porteri","MUPO2",NA,1,17,8
+"67","Muhlenbergia porteri","MUPO2",NA,1,17,10
+"68","Muhlenbergia porteri","MUPO2",NA,1,17,12
+"69","Aristida","ARIST",NA,1,18,7
+"70","Bouteloua eriopoda","BOER4",NA,1,18,6
+"71","Aristida","ARIST",NA,1,18,17
+"72","Aristida","ARIST",NA,1,18,5
+"73","Aristida","ARIST",NA,1,19,7
+"74","Aristida","ARIST",NA,1,19,6
+"75","Aristida","ARIST",NA,1,19,17
+"76","Aristida","ARIST",NA,1,19,5
+"77","Aristida","ARIST",NA,1,20,5
+"78","Aristida","ARIST",NA,1,20,15
+"79","Aristida","ARIST",NA,1,20,17
+"80","Aristida","ARIST",NA,1,20,10
+"81","Aristida","ARIST",NA,1,21,5
+"82","Aristida","ARIST",NA,1,21,15
+"83","Aristida","ARIST",NA,1,21,17
+"84","Aristida","ARIST",NA,1,21,10
+"85","Muhlenbergia porteri","MUPO2",NA,1,22,5
+"86","Muhlenbergia porteri","MUPO2",NA,1,22,9
+"87","Muhlenbergia porteri","MUPO2",NA,1,22,12
+"88","Muhlenbergia porteri","MUPO2",NA,1,22,21
+"89","Muhlenbergia porteri","MUPO2",NA,1,23,17
+"90","Muhlenbergia porteri","MUPO2",NA,1,23,19
+"91","Muhlenbergia porteri","MUPO2",NA,1,23,15
+"92","Muhlenbergia porteri","MUPO2",NA,1,23,13
+"93","Muhlenbergia porteri","MUPO2",NA,1,24,17
+"94","Muhlenbergia porteri","MUPO2",NA,1,24,19
+"95","Muhlenbergia porteri","MUPO2",NA,1,24,13
+"96","Muhlenbergia porteri","MUPO2",NA,1,24,10
+"97","Aristida","ARIST",NA,1,25,7
+"98","Aristida","ARIST",NA,1,25,8
+"99","Aristida","ARIST",NA,1,25,6
+"100","Aristida","ARIST",NA,1,25,6
+"101","Muhlenbergia porteri","MUPO2",NA,1,26,6
+"102","Muhlenbergia porteri","MUPO2",NA,1,26,2
+"103","Muhlenbergia porteri","MUPO2",NA,1,26,2
+"104","Muhlenbergia porteri","MUPO2",NA,1,26,2
+"105","Setaria macrostachya","SEMA5",NA,1,27,2
+"106","Setaria macrostachya","SEMA5",NA,1,27,6
+"107","Setaria macrostachya","SEMA5",NA,1,27,4
+"108","Setaria macrostachya","SEMA5",NA,1,27,6
+"109","Setaria macrostachya","SEMA5",NA,1,28,2
+"110","Setaria macrostachya","SEMA5",NA,1,28,6
+"111","Setaria macrostachya","SEMA5",NA,1,28,4
+"112","Setaria macrostachya","SEMA5",NA,1,28,6
+"113","Setaria macrostachya","SEMA5",NA,1,29,2
+"114","Setaria macrostachya","SEMA5",NA,1,29,6
+"115","Setaria macrostachya","SEMA5",NA,1,29,4
+"116","Setaria macrostachya","SEMA5",NA,1,29,6
+"117","Digitaria californica","DICA8",NA,1,30,3
+"118","Digitaria californica","DICA8",NA,1,30,2
+"119","Digitaria californica","DICA8",NA,1,30,2
+"120","Digitaria californica","DICA8",NA,1,30,3
+"121","Digitaria californica","DICA8",NA,1,31,3
+"122","Digitaria californica","DICA8",NA,1,31,2
+"123","Digitaria californica","DICA8",NA,1,31,2
+"124","Digitaria californica","DICA8",NA,1,31,3
+"125","Muhlenbergia porteri","MUPO2",NA,1,32,27
+"126","Muhlenbergia porteri","MUPO2",NA,1,32,39
+"127","Muhlenbergia porteri","MUPO2",NA,1,32,47
+"128","Muhlenbergia porteri","MUPO2",NA,1,32,31
+"129","Muhlenbergia porteri","MUPO2",NA,1,33,19
+"130","Muhlenbergia porteri","MUPO2",NA,1,33,4
+"131","Muhlenbergia porteri","MUPO2",NA,1,33,8
+"132","Muhlenbergia porteri","MUPO2",NA,1,33,3
+"133","Aristida","ARIST",NA,1,34,8
+"134","Aristida","ARIST",NA,1,34,16
+"135","Aristida","ARIST",NA,1,34,17
+"136","Aristida","ARIST",NA,1,34,11
+"137","Aristida","ARIST",NA,1,35,13
+"138","Aristida","ARIST",NA,1,35,13
+"139","Aristida","ARIST",NA,1,35,17
+"140","Aristida","ARIST",NA,1,35,5
+"141","Aristida","ARIST",NA,1,36,9
+"142","Aristida","ARIST",NA,1,36,7
+"143","Aristida","ARIST",NA,1,36,9
+"144","Aristida","ARIST",NA,1,36,5
+"145","Aristida","ARIST",NA,1,37,9
+"146","Aristida","ARIST",NA,1,37,7
+"147","Aristida","ARIST",NA,1,37,5
+"148","Aristida","ARIST",NA,1,37,9
+"149","Muhlenbergia porteri","MUPO2",NA,1,38,14
+"150","Muhlenbergia porteri","MUPO2",NA,1,38,9
+"151","Muhlenbergia porteri","MUPO2",NA,1,38,9
+"152","Muhlenbergia porteri","MUPO2",NA,1,38,5
+"153","Muhlenbergia porteri","MUPO2",NA,1,39,7
+"154","Muhlenbergia porteri","MUPO2",NA,1,39,4
+"155","Muhlenbergia porteri","MUPO2",NA,1,39,8
+"156","Muhlenbergia porteri","MUPO2",NA,1,39,2
+"157","Muhlenbergia porteri","MUPO2",NA,1,40,4
+"158","Muhlenbergia porteri","MUPO2",NA,1,40,4
+"159","Muhlenbergia porteri","MUPO2",NA,1,40,3
+"160","Muhlenbergia porteri","MUPO2",NA,1,40,3
+"161","Muhlenbergia porteri","MUPO2",NA,1,41,4
+"162","Muhlenbergia porteri","MUPO2",NA,1,41,4
+"163","Muhlenbergia porteri","MUPO2",NA,1,41,3
+"164","Muhlenbergia porteri","MUPO2",NA,1,41,3
+"165","Aristida","ARIST",NA,1,42,11
+"166","Aristida","ARIST",NA,1,42,8
+"167","Aristida","ARIST",NA,1,42,9
+"168","Aristida","ARIST",NA,1,42,11
+"169","Aristida","ARIST",NA,1,43,11
+"170","Aristida","ARIST",NA,1,43,8
+"171","Aristida","ARIST",NA,1,43,9
+"172","Aristida","ARIST",NA,1,43,11
+"173","Aristida","ARIST",NA,1,44,11
+"174","Aristida","ARIST",NA,1,44,8
+"175","Aristida","ARIST",NA,1,44,9
+"176","Aristida","ARIST",NA,1,44,11
+"177","Aristida","ARIST",NA,1,45,11
+"178","Aristida","ARIST",NA,1,45,8
+"179","Aristida","ARIST",NA,1,45,9
+"180","Aristida","ARIST",NA,1,45,11
+"181","Muhlenbergia porteri","MUPO2",NA,1,46,4
+"182","Muhlenbergia porteri","MUPO2",NA,1,46,5
+"183","Muhlenbergia porteri","MUPO2",NA,1,46,4
+"184","Muhlenbergia porteri","MUPO2",NA,1,46,4
+"185","Muhlenbergia porteri","MUPO2",NA,1,47,4
+"186","Muhlenbergia porteri","MUPO2",NA,1,47,5
+"187","Muhlenbergia porteri","MUPO2",NA,1,47,4
+"188","Muhlenbergia porteri","MUPO2",NA,1,47,4
+"189","Muhlenbergia porteri","MUPO2",NA,1,48,8
+"190","Muhlenbergia porteri","MUPO2",NA,1,48,9
+"191","Digitaria californica","DICA8",NA,1,48,9
+"192","Muhlenbergia porteri","MUPO2",NA,1,48,11
+"193","Muhlenbergia porteri","MUPO2",NA,1,49,8
+"194","Muhlenbergia porteri","MUPO2",NA,1,49,9
+"195","Muhlenbergia porteri","MUPO2",NA,1,49,8
+"196","Muhlenbergia porteri","MUPO2",NA,1,49,11
+"197","Muhlenbergia porteri","MUPO2",NA,1,50,8
+"198","Muhlenbergia porteri","MUPO2",NA,1,50,9
+"199","Muhlenbergia porteri","MUPO2",NA,1,50,8
+"200","Muhlenbergia porteri","MUPO2",NA,1,50,11
+"201","Muhlenbergia porteri","MUPO2",NA,1,51,23
+"202","Muhlenbergia porteri","MUPO2",NA,1,51,11
+"203","Muhlenbergia porteri","MUPO2",NA,1,51,19
+"204","Muhlenbergia porteri","MUPO2",NA,1,51,23
+"205","Muhlenbergia porteri","MUPO2",NA,1,52,9
+"206","Muhlenbergia porteri","MUPO2",NA,1,52,8
+"207","Muhlenbergia porteri","MUPO2",NA,1,52,6
+"208","Muhlenbergia porteri","MUPO2",NA,1,52,9
+"209","Muhlenbergia porteri","MUPO2",NA,1,53,10
+"210","Muhlenbergia porteri","MUPO2",NA,1,53,10
+"211","Muhlenbergia porteri","MUPO2",NA,1,53,14
+"212","Muhlenbergia porteri","MUPO2",NA,1,53,7
+"213","Muhlenbergia porteri","MUPO2",NA,1,54,10
+"214","Muhlenbergia porteri","MUPO2",NA,1,54,10
+"215","Muhlenbergia porteri","MUPO2",NA,1,54,7
+"216","Muhlenbergia porteri","MUPO2",NA,1,54,14
+"217","Digitaria californica","DICA8",NA,1,55,39
+"218","Digitaria californica","DICA8",NA,1,55,10
+"219","Digitaria californica","DICA8",NA,1,55,18
+"220","Digitaria californica","DICA8",NA,1,55,8
+"221","Digitaria californica","DICA8",NA,1,56,39
+"222","Digitaria californica","DICA8",NA,1,56,10
+"223","Digitaria californica","DICA8",NA,1,56,13
+"224","Digitaria californica","DICA8",NA,1,56,8
+"225","Digitaria californica","DICA8",NA,1,57,39
+"226","Digitaria californica","DICA8",NA,1,57,10
+"227","Digitaria californica","DICA8",NA,1,57,13
+"228","Digitaria californica","DICA8",NA,1,57,8
+"229","Digitaria californica","DICA8",NA,1,58,39
+"230","Digitaria californica","DICA8",NA,1,58,10
+"231","Digitaria californica","DICA8",NA,1,58,13
+"232","Digitaria californica","DICA8",NA,1,58,8
+"233","Aristida","ARIST",NA,1,59,12
+"234","Aristida","ARIST",NA,1,59,13
+"235","Aristida","ARIST",NA,1,59,12
+"236","Aristida","ARIST",NA,1,59,12
+"237","Aristida","ARIST",NA,1,60,12
+"238","Aristida","ARIST",NA,1,60,13
+"239","Aristida","ARIST",NA,1,60,12
+"240","Aristida","ARIST",NA,1,60,12
+"241","Aristida","ARIST",NA,1,61,1
+"242","Aristida","ARIST",NA,1,61,13
+"243","Aristida","ARIST",NA,1,61,12
+"244","Aristida","ARIST",NA,1,61,12
+"245","Aristida","ARIST",NA,1,62,12
+"246","Aristida","ARIST",NA,1,62,13
+"247","Aristida","ARIST",NA,1,62,12
+"248","Aristida","ARIST",NA,1,62,12
+"249","Aristida","ARIST",NA,1,63,9
+"250","Aristida","ARIST",NA,1,63,10
+"251","Aristida","ARIST",NA,1,63,14
+"252","Aristida","ARIST",NA,1,63,7
+"253","Aristida","ARIST",NA,1,64,9
+"254","Aristida","ARIST",NA,1,64,10
+"255","Aristida","ARIST",NA,1,64,14
+"256","Aristida","ARIST",NA,1,64,7
+"257","Eragrostis lehmanniana","ERLE",NA,1,65,16
+"258","Eragrostis lehmanniana","ERLE",NA,1,65,17
+"259","Eragrostis lehmanniana","ERLE",NA,1,65,12
+"260","Eragrostis lehmanniana","ERLE",NA,1,65,15
+"261","Muhlenbergia porteri","MUPO2",NA,1,66,6
+"262","Muhlenbergia porteri","MUPO2",NA,1,66,8
+"263","Muhlenbergia porteri","MUPO2",NA,1,66,14
+"264","Muhlenbergia porteri","MUPO2",NA,1,66,21
+"265","Muhlenbergia porteri","MUPO2",NA,1,67,8
+"266","Muhlenbergia porteri","MUPO2",NA,1,67,6
+"267","Muhlenbergia porteri","MUPO2",NA,1,67,5
+"268","Muhlenbergia porteri","MUPO2",NA,1,67,9
+"269","Digitaria californica","DICA8",NA,1,68,5
+"270","Digitaria californica","DICA8",NA,1,68,4
+"271","Digitaria californica","DICA8",NA,1,68,4
+"272","Digitaria californica","DICA8",NA,1,68,3
+"273","Digitaria californica","DICA8",NA,1,69,5
+"274","Digitaria californica","DICA8",NA,1,69,4
+"275","Digitaria californica","DICA8",NA,1,69,4
+"276","Digitaria californica","DICA8",NA,1,69,3
+"277","Aristida","ARIST",NA,1,70,20
+"278","Aristida","ARIST",NA,1,70,14
+"279","Aristida","ARIST",NA,1,70,16
+"280","Aristida","ARIST",NA,1,70,17
+"281","Aristida","ARIST",NA,1,71,14
+"282","Aristida","ARIST",NA,1,71,16
+"283","Aristida","ARIST",NA,1,71,17
+"284","Aristida","ARIST",NA,1,71,10
+"285","Aristida","ARIST",NA,1,72,23
+"286","Aristida","ARIST",NA,1,72,7
+"287","Aristida","ARIST",NA,1,72,13
+"288","Aristida","ARIST",NA,1,72,12
+"289","Aristida","ARIST",NA,1,73,23
+"290","Aristida","ARIST",NA,1,73,7
+"291","Aristida","ARIST",NA,1,73,13
+"292","Aristida","ARIST",NA,1,73,10
+"293","Aristida","ARIST",NA,1,74,23
+"294","Aristida","ARIST",NA,1,74,7
+"295","Aristida","ARIST",NA,1,74,13
+"296","Aristida","ARIST",NA,1,74,10
+"297","Digitaria californica","DICA8",NA,1,75,12
+"298","Digitaria californica","DICA8",NA,1,75,13
+"299","Digitaria californica","DICA8",NA,1,75,7
+"300","Digitaria californica","DICA8",NA,1,75,15
+"301","Digitaria californica","DICA8",NA,1,76,5
+"302","Digitaria californica","DICA8",NA,1,76,1
+"303","Digitaria californica","DICA8",NA,1,76,6
+"304","Digitaria californica","DICA8",NA,1,76,3
+"305","Digitaria californica","DICA8",NA,1,77,5
+"306","Digitaria californica","DICA8",NA,1,77,1
+"307","Digitaria californica","DICA8",NA,1,77,7
+"308","Digitaria californica","DICA8",NA,1,77,3
+"309","Digitaria californica","DICA8",NA,1,78,5
+"310","Digitaria californica","DICA8",NA,1,78,1
+"311","Digitaria californica","DICA8",NA,1,78,7
+"312","Digitaria californica","DICA8",NA,1,78,3
+"313","Aristida","ARIST",NA,1,79,12
+"314","Aristida","ARIST",NA,1,79,12
+"315","Aristida","ARIST",NA,1,79,9
+"316","Aristida","ARIST",NA,1,79,12
+"317","Eragrostis lehmanniana","ERLE",NA,1,80,5
+"318","Eragrostis lehmanniana","ERLE",NA,1,80,2
+"319","Eragrostis lehmanniana","ERLE",NA,1,80,7
+"320","Eragrostis lehmanniana","ERLE",NA,1,80,3
+"321","Eragrostis lehmanniana","ERLE",NA,1,81,5
+"322","Eragrostis lehmanniana","ERLE",NA,1,81,2
+"323","Eragrostis lehmanniana","ERLE",NA,1,81,7
+"324","Eragrostis lehmanniana","ERLE",NA,1,81,3
+"325","Aristida","ARIST",NA,1,82,11
+"326","Aristida","ARIST",NA,1,82,13
+"327","Aristida","ARIST",NA,1,82,11
+"328","Aristida","ARIST",NA,1,82,11
+"329","Aristida","ARIST",NA,1,83,11
+"330","Aristida","ARIST",NA,1,83,13
+"331","Aristida","ARIST",NA,1,83,11
+"332","Aristida","ARIST",NA,1,83,11
+"333","Muhlenbergia porteri","MUPO2",NA,1,84,8
+"334","Muhlenbergia porteri","MUPO2",NA,1,84,8
+"335","Muhlenbergia porteri","MUPO2",NA,1,84,10
+"336","Muhlenbergia porteri","MUPO2",NA,1,84,9
+"337","Muhlenbergia porteri","MUPO2",NA,1,85,8
+"338","Muhlenbergia porteri","MUPO2",NA,1,85,8
+"339","Muhlenbergia porteri","MUPO2",NA,1,85,10
+"340","Muhlenbergia porteri","MUPO2",NA,1,85,9
+"341","Muhlenbergia porteri","MUPO2",NA,1,86,12
+"342","Muhlenbergia porteri","MUPO2",NA,1,86,9
+"343","Muhlenbergia porteri","MUPO2",NA,1,86,9
+"344","Muhlenbergia porteri","MUPO2",NA,1,86,8
+"345","Muhlenbergia porteri","MUPO2",NA,1,87,12
+"346","Muhlenbergia porteri","MUPO2",NA,1,87,12
+"347","Muhlenbergia porteri","MUPO2",NA,1,87,9
+"348","Muhlenbergia porteri","MUPO2",NA,1,87,8
+"349","Aristida","ARIST",NA,1,88,7
+"350","Aristida","ARIST",NA,1,88,14
+"351","Aristida","ARIST",NA,1,88,15
+"352","Aristida","ARIST",NA,1,88,13
+"353","Muhlenbergia porteri","MUPO2",NA,1,89,12
+"354","Muhlenbergia porteri","MUPO2",NA,1,89,12
+"355","Muhlenbergia porteri","MUPO2",NA,1,89,14
+"356","Muhlenbergia porteri","MUPO2",NA,1,89,7
+"357","Muhlenbergia porteri","MUPO2",NA,1,90,12
+"358","Muhlenbergia porteri","MUPO2",NA,1,90,12
+"359","Muhlenbergia porteri","MUPO2",NA,1,90,14
+"360","Muhlenbergia porteri","MUPO2",NA,1,90,7
+"361","Muhlenbergia porteri","MUPO2",NA,1,91,12
+"362","Muhlenbergia porteri","MUPO2",NA,1,91,12
+"363","Muhlenbergia porteri","MUPO2",NA,1,91,14
+"364","Muhlenbergia porteri","MUPO2",NA,1,91,7
+"365","Muhlenbergia porteri","MUPO2",NA,1,92,12
+"366","Muhlenbergia porteri","MUPO2",NA,1,92,12
+"367","Muhlenbergia porteri","MUPO2",NA,1,92,14
+"368","Muhlenbergia porteri","MUPO2",NA,1,92,7
+"369","Aristida","ARIST",NA,1,93,19
+"370","Aristida","ARIST",NA,1,93,24
+"371","Aristida","ARIST",NA,1,93,24
+"372","Aristida","ARIST",NA,1,93,17
+"373","Aristida","ARIST",NA,1,94,19
+"374","Aristida","ARIST",NA,1,94,24
+"375","Aristida","ARIST",NA,1,94,24
+"376","Aristida","ARIST",NA,1,94,10
+"377","Aristida","ARIST",NA,1,95,15
+"378","Aristida","ARIST",NA,1,95,13
+"379","Aristida","ARIST",NA,1,95,18
+"380","Aristida","ARIST",NA,1,95,19
+"381","Aristida","ARIST",NA,1,96,15
+"382","Aristida","ARIST",NA,1,96,13
+"383","Aristida","ARIST",NA,1,96,18
+"384","Aristida","ARIST",NA,1,96,19
+"385","Aristida","ARIST",NA,1,97,15
+"386","Aristida","ARIST",NA,1,97,13
+"387","Aristida","ARIST",NA,1,97,18
+"388","Aristida","ARIST",NA,1,97,19
+"389","Muhlenbergia porteri","MUPO2",NA,1,98,2
+"390","Muhlenbergia porteri","MUPO2",NA,1,98,21
+"391","Muhlenbergia porteri","MUPO2",NA,1,98,4
+"392","Muhlenbergia porteri","MUPO2",NA,1,98,9
+"393","Muhlenbergia porteri","MUPO2",NA,1,99,2
+"394","Muhlenbergia porteri","MUPO2",NA,1,99,24
+"395","Muhlenbergia porteri","MUPO2",NA,1,99,4
+"396","Muhlenbergia porteri","MUPO2",NA,1,99,9
+"397","Setaria macrostachya","SEMA5",NA,1,100,5
+"398","Setaria macrostachya","SEMA5",NA,1,100,4
+"399","Setaria macrostachya","SEMA5",NA,1,100,4
+"400","Setaria macrostachya","SEMA5",NA,1,100,5

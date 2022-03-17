@@ -1,0 +1,145 @@
+---
+title: "A_Step2_SRER_Stubble_FromLongForm"
+author: "Brandon Mayer"
+date: "8/28/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl);library(tidyverse);library(stringr)
+library(rstatix);library(ggpubr)
+
+```
+
+First Set of data
+
+```{r}
+path <- "C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/data/2021/SRER_Use_VGS_Export_RAW_20210816_183142_copy.xlsx"
+sheets<-excel_sheets(path = path)
+paste0(strsplit(strsplit(sheets, ' ')[[2]], '')[[1]][1],strsplit(strsplit(sheets, ' ')[[2]], '')[[2]][1])
+
+LoadedSheets <- list()
+for (i in 1:length(sheets)) {
+  
+  LoadedSheets[[i]] <- read_excel(path, sheet =sheets[i])
+  names(LoadedSheets)[i]<- paste0(strsplit(strsplit(sheets, ' ')[[i]], '')[[1]][1],strsplit(strsplit(sheets, ' ')[[i]], '')[[2]][1])
+
+}
+
+```
+```{r}
+TempSplit<- LoadedSheets[[2]]%>%mutate(Pasture = word(Ancestry,-1)) %>% split(LoadedSheets[[2]]$EventName)
+SH_C1<- as.data.frame(TempSplit[[2]])%>% select(-Ancestry,-ProtocolType,-ProtocolName, -EventType, -EventName, -SiteType, -SiteStatus, -FieldSymbol, -SpeciesQualifier, -FieldQualifier,-Element,-SubElement, -cParameter, -cParameter2, -cParameter3, -cValueCommon, -cValue2Common,-cValue3, -cValue3Common,-cValue2)
+SH_C1$cValue <-as.double(SH_C1$cValue) 
+SH_C1 <- SH_C1 %>% select(Date, Pasture,SiteID,SpeciesSymbol,SpeciesName,CommonName,Transect,SampleNumber,"SH1"=cValue,"SH2"=nValue,"SH3"=nValue2,"SH4"=nValue3) %>%  pivot_longer(
+   cols = "SH1":"SH4",
+   names_to = "Element",
+   values_to = "SH",
+   names_prefix = "SH",
+   values_drop_na = TRUE
+ )
+  
+SH_C2<- LoadedSheets[[4]] %>% mutate(Pasture = word(Ancestry,-1))%>% select(-FormName,-Ancestry,-ProtocolType,-ProtocolName, -EventType, -EventName, -SiteType, -SiteStatus, -FieldSymbol, -SpeciesQualifier, -FieldQualifier,-SubElement, -cParameter, -cParameter2, -cParameter3, -cValueCommon, -cValue2Common,-cValue,-cValue2,-cValue3, -cValue3Common,-nValue2, -nValue3) %>% select(Date,Pasture,SiteID,SpeciesSymbol,SpeciesName,CommonName,Transect,SampleNumber,Element,"SH"=nValue)
+
+names(SH_C1);names(SH_C2)
+
+SH2021<- rbind(SH_C1,SH_C2)
+SH2021$Date <- as.Date.character(SH2021$Date,"%m/%d/%Y")
+SH2021 %>% group_by(Date,Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date,Pasture,SiteID)
+
+```
+
+Combine Stubble height
+  -   long pivot on Element with cValue, nValue, nValue2, nValue3
+  -   Rename as "Value
+
+Second set of SRER data 
+
+```{r}
+path <- "C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/RAW_Data/GY2021/Bulk_Raw_Export/VGS-Export_RAW_20210420_174743_COPY.xlsx"
+sheets<-excel_sheets(path = path)
+# paste0(strsplit(strsplit(sheets, ' ')[[2]], '')[[1]][1],strsplit(strsplit(sheets, ' ')[[2]], '')[[2]][1])
+
+LoadedSheets <- list()
+for (i in 1:length(sheets)) {
+  
+  LoadedSheets[[i]] <- read_excel(path, sheet =sheets[i])
+  names(LoadedSheets)[i]<- paste0(gsub("[a-z]","", sheets[i]))
+
+}
+unique(LoadedSheets[[3]]$FormName)
+```
+
+```{r}
+TempSplit<- LoadedSheets[[3]]%>%mutate(Pasture = word(Ancestry,-1)) %>% split(LoadedSheets[[3]]$FormName)
+  SH_C1<- as.data.frame(TempSplit[[1]])%>% select(-Ancestry,-ProtocolType,-ProtocolName, -EventType, -EventName, -SiteType, -SiteStatus, -FieldSymbol, -SpeciesQualifier, -FieldQualifier,-Element,-SubElement, -Parameter, -Parameter2, -Parameter3,-CharValue2,-CharValue3)
+SH_C1$CharValue <-as.double(SH_C1$CharValue) 
+SH_C1 <- SH_C1 %>% select(Date, Pasture,SiteID,SpeciesSymbol,SpeciesName,CommonName,Transect,SampleNumber,"SH1"=CharValue,"SH2"=Value,"SH3"=Value2,"SH4"=Value3) %>%  pivot_longer(
+   cols = "SH1":"SH4",
+   names_to = "Element",
+   values_to = "SH",
+   names_prefix = "SH",
+   values_drop_na = TRUE
+ )
+  
+SH_C2<- LoadedSheets[[4]] %>% mutate(Pasture = word(Ancestry,-1))%>% select(-FormName,-Ancestry,-ProtocolType,-ProtocolName, -EventType, -EventName, -SiteType, -SiteStatus, -FieldSymbol, -SpeciesQualifier, -FieldQualifier,-SubElement, -Parameter, -Parameter2, -Parameter3,-CharValue,-CharValue2,-CharValue3,-Value2, -Value3) %>% select(Date,Pasture,SiteID,SpeciesSymbol,SpeciesName,CommonName,Transect,SampleNumber,Element,"SH"=Value)
+
+names(SH_C1);names(SH_C2)
+
+SH2020<- rbind(SH_C1,SH_C2)
+SH2020$Date <- as.Date.character(SH2020$Date,"%m/%d/%Y")
+
+SH2020 %>% group_by(Date,Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date,Pasture,SiteID)
+```
+
+```{r}
+SH2021<-SH2021 %>% filter(Pasture == "6A"|Pasture == "6B"|Pasture =="6D"|Pasture =="6E"|Pasture =="15")
+
+SH2020 <- SH2020 %>% filter(Date > lubridate::date("2020-10-01"))
+
+SH_Merge<- rbind(SH2020,SH2021)
+SH_Merge %>% group_by(Date,Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date,Pasture,SiteID)
+
+```
+```{r}
+SH_Merge %>% group_by(Date,Pasture,SiteID, SampleNumber)%>% summarise("AverageSH" = mean(SH))
+GC.SH_merge <- GC_merge %>% left_join(SH_Merge %>% select(Date, Pasture, SiteID, SampleNumber, Element, SH), by = c("Date", "Pasture", "SiteID", "SampleNumber"))
+
+GC.SH_merge %>% group_by(Date,Pasture,SiteID)%>% summarise("Count" = n()) %>% arrange(Date,Pasture,SiteID)
+
+# SH2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2S")%>% arrange(Date, Pasture)
+# SH2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "2S")%>% arrange(Date, Pasture)
+# 
+# SH2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12C")%>% arrange(Date, Pasture)
+# SH2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12C")%>% arrange(Date, Pasture)
+# SH2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12A")%>% arrange(Date, Pasture)
+# SH2020 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>%filter(Pasture == "12A")%>% arrange(Date, Pasture)
+GC.SH_merge[sort(append(which(is.na(GC.SH_merge$SH), arr.ind=TRUE),which(is.na(GC.SH_merge$SH), arr.ind=TRUE)-1)),]%>% arrange(Date, Pasture)
+
+```
+Stubble average per species
+```{r}
+AverageStubble<-GC.SH_merge[-sort(which(is.na(GC.SH_merge$SH), arr.ind=TRUE)),]%>% arrange(Date, Pasture) %>% group_by(Visit, SpeciesSymbol, SpeciesName, Value) %>% filter(cValue=="New Plant") %>% summarize("MedianSH" =median(SH),"AverageSH" = mean(SH),"SDSH" =sd(SH) )
+Merge_StubbleOnly <- GC.SH_merge[-sort(which(is.na(GC.SH_merge$SH), arr.ind=TRUE)),]
+unique(Merge_StubbleOnly$SpeciesName)
+p2 <- ggplot(GC.SH_merge[-sort(which(is.na(GC.SH_merge$SH), arr.ind=TRUE)),] %>% filter(SpeciesName == "Bouteloua repens"|SpeciesName == "Eragrostis lehmanniana"|SpeciesName == "Aristida"|SpeciesName == "Setaria macrostachya"|SpeciesName == "Heteropogon contortus"|SpeciesName == "Bouteloua curtipendula"|SpeciesName == "Digitaria californica"|SpeciesName == "Bouteloua rothrockii"|SpeciesName == "Muhlenbergia porteri"|SpeciesName == "Bouteloua eriopoda"|SpeciesName == "Pennisetum ciliare"|SpeciesName == "Sporobolus cryptandrus"|SpeciesName == "Eragrostis curvula"|SpeciesName == "Pappophorum mucronulatum"), aes(x=factor(Value), y=SH)) + 
+    geom_boxplot() +
+    facet_wrap(~SpeciesName, scale="free")+ ggtitle("Stubble height vs Graze Class") +
+  xlab("Precent Use (%)") + ylab("Stubble Height (cm)")+theme(plot.title = element_text(hjust = 0.5))
+p2 
+
+my_comparisons <- list( c("0", "10"), c("1", "2"), c("0.5", "2") )
+
+ggboxplot(GC.SH_merge[-sort(which(is.na(GC.SH_merge$SH), arr.ind=TRUE)),] %>% filter(SpeciesName == "Bouteloua repens"|SpeciesName == "Eragrostis lehmanniana"|SpeciesName == "Aristida"|SpeciesName == "Setaria macrostachya"|SpeciesName == "Heteropogon contortus"|SpeciesName == "Bouteloua curtipendula"|SpeciesName == "Digitaria californica"|SpeciesName == "Bouteloua rothrockii"|SpeciesName == "Muhlenbergia porteri"|SpeciesName == "Bouteloua eriopoda"|SpeciesName == "Pennisetum ciliare"|SpeciesName == "Sporobolus cryptandrus"|SpeciesName == "Eragrostis curvula"|SpeciesName == "Pappophorum mucronulatum"), aes(x=factor(Value), y=SH)) + 
+    geom_boxplot() +
+    facet_wrap(~SpeciesName, scale="free")+ ggtitle("Stubble height vs Graze Class") +
+  xlab("Precent Use (%)") + ylab("Stubble Height (cm)")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+```{r}
+"C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/GY2021/MultiVisit_useaverage.csv"
+```
+

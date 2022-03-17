@@ -1,0 +1,82 @@
+---
+title: "ProductionAnalysis xlxSheeting"
+author: "Brandon Mayer"
+date: "9/13/2021"
+output: html_document
+---
+```{r setup, include=FALSE,echo=FALSE,}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+Walkthrough to organize .xlsx file into CSV files for analysis in "Production_Processing.R" file.
+
+Paste the location of the Raw or remove "readline()" and type in file location. 
+
+```{r}
+# absol_path <- "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRERexl2021"
+# absol_path <- ""
+print("Paste the location of the .xlsx files");absol_path <- readline();print("Type the year collected");year <-readline()
+
+# create a location in your working directory to store sheeted data
+dir.create(paste0(getwd(),"/Data/"));dir.create(paste0(getwd(),"/Data/Production"))
+finalfolder <-paste0(paste0(absol_path,"/",year,"_sheeted"));dir.create(finalfolder)
+# folder_files <- list.files("C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRERexl2020",recursive = T, include.dirs = F, pattern = ".xlsx")
+(folder_files <- list.files(absol_path,recursive = F, include.dirs = F, pattern = ".xlsx"))
+
+```
+
+Splits xlsx into CSVs for analysis
+
+```{r}
+for (i in folder_files) {
+  path_to_xlsx <- paste(absol_path,i,sep="/")
+  #path_to_xlsx <- "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRERexl2021/20211001_UAE_T1.xlsx"
+  metadata <- readxl::read_excel(path_to_xlsx, sheet = 1)
+  Pasture <- gsub(" ","",gsub("Site:","", sub('-.*', '\\1',sub('.*>', '\\1', metadata[1,1])), fixed = TRUE))
+  #Transect <- tail(unlist(stringr::str_split(metadata[1,1]," ")), n=1) 
+  Transect <- stringr::str_split(gsub(".xlsx","",i), "_")[[1]][2] #use if sites are separated
+  date <- gsub("-","",format(strptime(gsub(" ","",as.character(sub('.*:', '\\1', metadata[2,1]))), format="%m/%d/%Y"), "%Y-%m-%d"))
+  base <- paste0(Pasture,"_",Transect)
+  sheet_names <- readxl::excel_sheets(path_to_xlsx)
+  # sheet_names <- readxl::excel_sheets(path_to_xlsx)[2:4]
+  # base <- gsub("\\..*","",basename(path_to_xlsx))
+  for (j in sheet_names) {
+    # j <- sheet_names[2]
+    data <- readxl::read_excel(path_to_xlsx, sheet=j)
+    if (j == "Frequency (by quadrat)") {
+      name <- "Freq"
+    }else if (j == "Comparative Yield") {
+      name <- "CY"
+    }else if (j == "Point Ground Cover") {
+      name <- "PGC"
+    }else{
+      name <- "DWR"
+    }
+    write.csv(data, file=paste0(finalfolder,"/",date,"_",base,"_",name,".csv"))
+  }
+}
+list.files(finalfolder)
+```
+
+------------------------------------------------------------------------------STOP------------------------------------------------------------------------
+
+If sites are split using multiple tablets and not merged prior to analysis use the following scrip to rbind. Ignore otherwise. 
+  -   Identifies which files are from the same site. 
+  -   Rbinds and rewrites files to new folder. 
+```{r}
+SheetedFiles<- list.files(finalfolder,full.names = T)
+sites <-unique(gsub(".1\\b","", unique(unlist(lapply(stringr::str_split(gsub(".csv","",list.files(finalfolder)), "_"), FUN = `[`, 3)))))
+Methods<- unique(unlist(lapply(stringr::str_split(gsub(".csv","",list.files(finalfolder)), "_"), FUN = `[`, 4)))
+for (s in sites) {
+  FocusedFiles <- SheetedFiles[stringr::str_detect(SheetedFiles, s)]
+  for (m in Methods) {
+      SiteMethodFiles <- FocusedFiles[stringr::str_detect(FocusedFiles, m)]
+      date<- unique(unlist(lapply(stringr::str_split(gsub(".csv","",basename(SiteMethodFiles)), "_"), FUN = `[`, 1)))
+      BoundSite <-data.table::rbindlist(lapply(SiteMethodFiles, read.csv)) %>% select(-X)
+      BoundSite[order(BoundSite$Transect,BoundSite$Sample)]
+      write.csv(BoundSite,file=paste0(finalfolder,"/",date,"_",s,"_",m,".csv"))
+  }
+}
+```
+

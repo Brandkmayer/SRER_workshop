@@ -1,0 +1,104 @@
+---
+title: "Production analysis using VGS data format sheeted to CSVs"
+author: "Brandon Mayer"
+date: "9/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(tidyverse)
+library(googlesheets4)
+
+```
+
+Assign the location of where the .xlsx files were sheeted or if "finalfolder" is still in global environment continue to 
+"Comparative Yield" step  
+
+```{r}
+# finalfolder <- "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRER2021_sheeted"
+# finalfolder <- 
+```
+
+----------------------------------------------------------------- CY ----------------------------------------------------------------
+You are going to be requested to grant "Tidyverse API Package" permissions when you run the script below. Check mark "ALLOW" under: 
+  -   "See, edit, create, and delete your spreadsheets in Google Drive"
+
+```{r}
+weights <- read_sheet("https://docs.google.com/spreadsheets/d/1iXcXoq1VtUhDNpuGBO6NRTbW9fhEFFdH4V2-bRrQAvE/edit?usp=sharing")
+```
+
+Then run the chunk below to load the data into the "Weight" object.
+
+```{r}
+weights <- read_sheet("https://docs.google.com/spreadsheets/d/1iXcXoq1VtUhDNpuGBO6NRTbW9fhEFFdH4V2-bRrQAvE/edit?usp=sharing")
+# Incase of formating errors Pasture is fixed as character data
+weights$Pasture <- as.character(weights$Pasture) 
+weights$Transect <- as.character(weights$Transect)
+weights$`Wet(g)` <- as.double(weights$`Wet(g)`)
+weights
+# Creates the formula
+(sumarWeights<-weights %>% group_by(Pasture, Transect)%>% summarise(formula =(lm(c(0,Value)~c(0,BagNum)))$coefficients[-1]));sumarWeights$Transect <- as.character(sumarWeights$Transect)
+```
+-----------------------------------------------------------------CY-----------------------------------------------------------------
+Load in comparative yield data
+```{r}
+allCY <- list.files(path = finalfolder, pattern = "CY",full.names = T)
+
+for (i in allCY) {
+  file <- read.csv(i)
+  base<- basename(i) # pasture_transect_method.csv
+  file$Pasture <- gsub("_.*","",base)
+  file$Transect <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Pasture, Transect, Rank) # once run all "Rank" columns will be changed in the sheeted copies
+  write.csv(file,i,row.names = F)
+}
+CYdf <- data.table::rbindlist(lapply(allCY, data.table::fread))
+
+TranCY <- transform(merge(CYdf, sumarWeights, by=c("Pasture", "Transect")), 
+                    Dry.wt = Rank * formula) %>% na.omit() 
+Production<- TranCY %>% group_by(Pasture, Transect)%>% summarise("Production_kg/ha" = (mean(Dry.wt)*62.5), "Production_lbs/ac" = (round(mean(Dry.wt)*62.5*.9,digits = 2)))
+
+# Where do you plan on  storing the results 
+ResultFolder <- paste0(dirname(finalfolder),"/Results");dir.create(ResultFolder);dir.create(paste0(ResultFolder,'/',year))
+
+write.csv(Production, paste0(ResultFolder,"/",year,"/Production.csv"))
+```
+-----------------------------------------------------------------DWR-----------------------------------------------------------------
+
+```{r}
+
+# allDWR <- list.files(path = "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRER2020_sheeted", pattern = "DWR",full.names = T)
+allDWR <- list.files(path = finalfolder, pattern = "DWR",full.names = T)
+
+for (i in allDWR) {
+  file <- read.csv(i)
+  base<- basename(i) # pasture_transect_method.csv
+  file$Pasture <- gsub("_.*","",base)
+  file$Transect <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Pasture, Transect, Species.Category.Name, Species.Category.Code, Rank)
+  write.csv(file,i,row.names = F)
+}
+
+
+DWRdf <- data.table::rbindlist(lapply(allDWR, data.table::fread))
+SpecList <- read.csv("C:/Users/brand/Dropbox/Project_Data/SRER/Production/Specieslist.csv")
+
+TranDWR <- merge(DWRdf, SpecList, by=c("Species.Category.Name"))
+  TranDWR$Rank[TranDWR$Rank == 1] <- 7
+  TranDWR$Rank[TranDWR$Rank == 2] <- 2
+  TranDWR$Rank[TranDWR$Rank == 3] <- 1
+  TranDWR$Rank <- as.numeric(TranDWR$Rank)
+GroupCounts<- TranDWR %>% group_by(Pasture, Transect, Plant_type, Native) %>% summarise("TotalCounts" = sum(Rank))
+
+CountPercentlong<- GroupCounts %>% group_by(Pasture, Transect) %>%mutate("Percent"=(TotalCounts/sum(TotalCounts))) %>% subset(Plant_type == "Perennial Grasses"|Plant_type == "Annual Grasses") %>% select(!TotalCounts)
+CountPercentwide<-CountPercentlong %>% spread(Native, Percent) %>% replace(is.na(.), 0) %>% mutate(Total = Native+Introduced) %>% split(unique(CountPercent$Plant_type))%>% reduce(left_join, by = c("Pasture","Transect"))%>% select(Pasture,Transect,"TotalAAGG" =Total.x,"IntroducedPPGG"=Introduced.y,"NativePPGG"=Native.y,"TotalPPGG"=Total.y)
+write.csv(CountPercentwide, paste0(ResultFolder,"/",year,"/PerennialgrassCOMP.csv"))
+```
+----------------------------------------------------- Finished Product-------------------------------------------------------------
+
+```{r}
+final <-left_join(Production,CountPercentwide, by = c("Pasture", "Transect")) %>% select(Pasture, Transect, TotalPPGG,NativePPGG,IntroducedPPGG,TotalAAGG,`Production_lbs/ac`)
+write.csv(final, paste0(ResultFolder,"/",year,"/final_results.csv"), row.names = F)
+```
+

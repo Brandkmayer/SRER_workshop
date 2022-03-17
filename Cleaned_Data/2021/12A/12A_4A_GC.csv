@@ -1,0 +1,101 @@
+"","Species/Category Name","Species/Category Code","Qualifier","Transect","Sample","Class End-Point"
+"1","Setaria macrostachya","SEMA5",NA,1,1,50
+"2","Setaria macrostachya","SEMA5",NA,1,2,50
+"3","Aristida","ARIST",NA,1,3,50
+"4","Aristida","ARIST",NA,1,4,50
+"5","Setaria macrostachya","SEMA5",NA,1,5,90
+"6","Setaria macrostachya","SEMA5",NA,1,6,90
+"7","Muhlenbergia porteri","MUPO2",NA,1,7,50
+"8","Muhlenbergia porteri","MUPO2",NA,1,8,70
+"9","Digitaria californica","DICA8",NA,1,9,70
+"10","Digitaria californica","DICA8",NA,1,10,70
+"11","Muhlenbergia porteri","MUPO2",NA,1,11,30
+"12","Muhlenbergia porteri","MUPO2",NA,1,12,10
+"13","Eragrostis lehmanniana","ERLE",NA,1,13,50
+"14","Eragrostis lehmanniana","ERLE",NA,1,14,50
+"15","Digitaria californica","DICA8",NA,1,15,90
+"16","Muhlenbergia porteri","MUPO2",NA,1,16,70
+"17","Muhlenbergia porteri","MUPO2",NA,1,17,70
+"18","Aristida","ARIST",NA,1,18,50
+"19","Aristida","ARIST",NA,1,19,50
+"20","Aristida","ARIST",NA,1,20,30
+"21","Aristida","ARIST",NA,1,21,30
+"22","Muhlenbergia porteri","MUPO2",NA,1,22,70
+"23","Muhlenbergia porteri","MUPO2",NA,1,23,10
+"24","Muhlenbergia porteri","MUPO2",NA,1,24,10
+"25","Aristida","ARIST",NA,1,25,70
+"26","Muhlenbergia porteri","MUPO2",NA,1,26,90
+"27","Setaria macrostachya","SEMA5",NA,1,27,90
+"28","Setaria macrostachya","SEMA5",NA,1,28,90
+"29","Setaria macrostachya","SEMA5",NA,1,29,90
+"30","Digitaria californica","DICA8",NA,1,30,90
+"31","Digitaria californica","DICA8",NA,1,31,90
+"32","Muhlenbergia porteri","MUPO2",NA,1,32,10
+"33","Muhlenbergia porteri","MUPO2",NA,1,33,50
+"34","Aristida","ARIST",NA,1,34,30
+"35","Aristida","ARIST",NA,1,35,10
+"36","Aristida","ARIST",NA,1,36,50
+"37","Aristida","ARIST",NA,1,37,50
+"38","Muhlenbergia porteri","MUPO2",NA,1,38,70
+"39","Muhlenbergia porteri","MUPO2",NA,1,39,90
+"40","Muhlenbergia porteri","MUPO2",NA,1,40,90
+"41","Muhlenbergia porteri","MUPO2",NA,1,41,90
+"42","Aristida","ARIST",NA,1,42,30
+"43","Aristida","ARIST",NA,1,43,30
+"44","Aristida","ARIST",NA,1,44,30
+"45","Aristida","ARIST",NA,1,45,30
+"46","Muhlenbergia porteri","MUPO2",NA,1,46,90
+"47","Muhlenbergia porteri","MUPO2",NA,1,47,90
+"48","Muhlenbergia porteri","MUPO2",NA,1,48,70
+"49","Muhlenbergia porteri","MUPO2",NA,1,49,70
+"50","Muhlenbergia porteri","MUPO2",NA,1,50,70
+"51","Muhlenbergia porteri","MUPO2",NA,1,51,50
+"52","Muhlenbergia porteri","MUPO2",NA,1,52,70
+"53","Muhlenbergia porteri","MUPO2",NA,1,53,70
+"54","Muhlenbergia porteri","MUPO2",NA,1,54,70
+"55","Digitaria californica","DICA8",NA,1,55,50
+"56","Digitaria californica","DICA8",NA,1,56,50
+"57","Digitaria californica","DICA8",NA,1,57,50
+"58","Digitaria californica","DICA8",NA,1,58,50
+"59","Aristida","ARIST",NA,1,59,10
+"60","Aristida","ARIST",NA,1,60,10
+"61","Aristida","ARIST",NA,1,61,10
+"62","Aristida","ARIST",NA,1,62,10
+"63","Aristida","ARIST",NA,1,63,10
+"64","Aristida","ARIST",NA,1,64,10
+"65","Eragrostis lehmanniana","ERLE",NA,1,65,30
+"66","Muhlenbergia porteri","MUPO2",NA,1,66,50
+"67","Muhlenbergia porteri","MUPO2",NA,1,67,70
+"68","Digitaria californica","DICA8",NA,1,68,90
+"69","Digitaria californica","DICA8",NA,1,69,90
+"70","Aristida","ARIST",NA,1,70,10
+"71","Aristida","ARIST",NA,1,71,10
+"72","Aristida","ARIST",NA,1,72,10
+"73","Aristida","ARIST",NA,1,73,10
+"74","Aristida","ARIST",NA,1,74,10
+"75","Digitaria californica","DICA8",NA,1,75,70
+"76","Digitaria californica","DICA8",NA,1,76,70
+"77","Digitaria californica","DICA8",NA,1,77,90
+"78","Digitaria californica","DICA8",NA,1,78,90
+"79","Aristida","ARIST",NA,1,79,10
+"80","Eragrostis lehmanniana","ERLE",NA,1,80,90
+"81","Eragrostis lehmanniana","ERLE",NA,1,81,90
+"82","Aristida","ARIST",NA,1,82,10
+"83","Aristida","ARIST",NA,1,83,10
+"84","Muhlenbergia porteri","MUPO2",NA,1,84,70
+"85","Muhlenbergia porteri","MUPO2",NA,1,85,70
+"86","Muhlenbergia porteri","MUPO2",NA,1,86,70
+"87","Muhlenbergia porteri","MUPO2",NA,1,87,70
+"88","Aristida","ARIST",NA,1,88,10
+"89","Muhlenbergia porteri","MUPO2",NA,1,89,50
+"90","Muhlenbergia porteri","MUPO2",NA,1,90,50
+"91","Muhlenbergia porteri","MUPO2",NA,1,91,50
+"92","Muhlenbergia porteri","MUPO2",NA,1,92,50
+"93","Aristida","ARIST",NA,1,93,10
+"94","Aristida","ARIST",NA,1,94,10
+"95","Aristida","ARIST",NA,1,95,10
+"96","Aristida","ARIST",NA,1,96,10
+"97","Aristida","ARIST",NA,1,97,10
+"98","Muhlenbergia porteri","MUPO2",NA,1,98,70
+"99","Muhlenbergia porteri","MUPO2",NA,1,99,70
+"100","Setaria macrostachya","SEMA5",NA,1,100,90

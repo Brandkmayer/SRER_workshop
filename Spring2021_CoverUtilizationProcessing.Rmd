@@ -1,0 +1,219 @@
+---
+title: "Raw_Export_Combined_Step1"
+author: "Brandon Mayer"
+date: "4/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)  
+library(tidyverse)
+library(reshape2)
+
+```
+
+Make data frames for each sheet in the excel document
+
+```{r cars}
+
+filename<- ("C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/data/2021/SRER_Use_VGS_Export_RAW_20210816_183142.xlsx")
+
+read_excel_allsheets <- function(filename, tibble = FALSE) {
+    # I prefer straight data.frames
+    # but if you like tidyverse tibbles (the default with read_excel)
+    # then just pass tibble = TRUE
+    sheets <- readxl::excel_sheets(filename)
+    x <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
+    if(!tibble) x <- lapply(x, as.data.frame)
+    sheets <- gsub(" ","", sheets)
+    names(x) <- sheets
+    x
+}
+
+mysheets <- read_excel_allsheets(filename);rm(read_excel_allsheets)
+list2env(mysheets,envir=.GlobalEnv);rm(mysheets);rm(filename)
+```
+Final product is a rbind df including "GenericValues" and "StubbleHeight" in long form
+Need to convert Generic values to long form 
+
+```{r}
+CoverValue <- GenericValues[is.na(GenericValues$Value), ]
+StubbleValue <- GenericValues[!is.na(GenericValues$Value), ]; rm(GenericValues)
+
+Stubble_gathered <- StubbleValue %>%  rename(V1 = Value, V2 = Value2, V3 = Value3, V4 = CharValue) %>% select(-CharValue2,-CharValue3,-SpeciesQualifier,-FieldQualifier, -SubElement, -Parameter, -Parameter2, -Parameter3,-Element)
+Stubble_gathered$V4 <-as.numeric(Stubble_gathered$V4)
+Stubble_gathered <-  Stubble_gathered %>%
+  pivot_longer(cols = starts_with("V"),
+   names_to = "Element", values_to = "Value")
+Stubble_gathered$Element[Stubble_gathered$Element == "V1"] <- 000001
+Stubble_gathered$Element[Stubble_gathered$Element == "V2"] <- 000002
+Stubble_gathered$Element[Stubble_gathered$Element == "V3"] <- 000003
+Stubble_gathered$Element[Stubble_gathered$Element == "V4"] <- 000004
+Stubble_gathered$Element <-as.numeric(Stubble_gathered$Element)
+
+
+StubbleHeight<- StubbleHeight %>% select(-SpeciesQualifier,-FieldQualifier, -SubElement, -Parameter, -Parameter2, -Parameter3,-CharValue, -CharValue2, -CharValue3,-Value2, -Value3)
+StubbleHeight$Element <-as.numeric(StubbleHeight$Element)
+# StubbleHeight$Ancestry <-(StubbleHeight$Ancestry)
+
+head(Stubble_gathered);head(StubbleHeight)
+StubbleHeight_comb <- rbind(StubbleHeight, Stubble_gathered);rm(Stubble_gathered, StubbleHeight, StubbleValue)
+```
+Final product is a rbind df including "Grazed class" and "Item Qualities" in long form
+
+Need to convert "Item Qualities"$values to match grazed classes in "Grazed class" df
+
+
+```{r pressure, echo=FALSE}
+#remove values that dont belong
+remove<- setdiff(sort(unique(Grazedclass$SiteID),decreasing = T),sort(unique(CoverValue$SiteID),decreasing = T))
+
+GrazedClass<- Grazedclass %>% filter(!SiteID %in% remove)
+
+Cover_subset <- CoverValue%>% select(Date, SiteID, SampleNumber, "Cover" = CommonName)
+# make subsets of cover and same plant 
+Sameplant_subset <- Cover_subset %>% filter(Cover %in% "Same Plant") %>% rename("Repeat" = Cover)
+Cover_subset <- Cover_subset %>% filter(!Cover %in% "Same Plant")
+
+# combine the subsets and graze class
+GrazedClass <- left_join(GrazedClass, Sameplant_subset, by = c("Date","SiteID", "SampleNumber"));rm(Sameplant_subset)
+GrazedClass <- left_join(GrazedClass, Cover_subset, by = c("Date","SiteID", "SampleNumber"));rm(Cover_subset)
+# replace NA in Repeat with "New plant" 
+GrazedClass$Repeat <- GrazedClass$Repeat %>% replace_na("New Plant")
+
+head(GrazedClass);head(CoverValue) # 
+```
+
+
+```{r pressure, echo=FALSE}
+#Lets you know if there's any missing graze class values
+unique(ItemQualities$Value)
+# Identify Graze class values with NAs
+ItemQualities[is.na(ItemQualities$Value), ]  
+# 
+ItemQualities <- ItemQualities[!is.na(ItemQualities$Value), ]  
+
+ItemQualities$Value[ItemQualities$Value == 5] <- 10
+ItemQualities$Value[ItemQualities$Value == 20] <- 30
+ItemQualities$Value[ItemQualities$Value == 40] <- 50
+ItemQualities$Value[ItemQualities$Value == 60] <- 70
+ItemQualities$Value[ItemQualities$Value == 80] <- 90
+
+# Use the linking table to correct accessbility standards
+linkingtable <- read_excel("data/2021/linkingtable.xlsx")
+ItemQualities$Repeat <- linkingtable$SpeciesName[match(ItemQualities$CharValue, linkingtable$PK_Species)]
+ItemQualities$Cover <- linkingtable$SpeciesName[match(ItemQualities$CharValue2, linkingtable$PK_Species)]
+ItemQualities$CharValue3 <- linkingtable$SpeciesName[match(ItemQualities$CharValue3, linkingtable$PK_Species)]
+rm(linkingtable)
+
+# merging Grazeclass and Itemqualities
+head(GrazedClass);head(ItemQualities)
+merge(x = GrazedClass, y = CoverValue[ , c("Date", "SiteID", "SpeciesName", "CommonName","SampleNumber","Value")], by = c("Date", "SpeciesName", "CommonName","SampleNumber"), all.x=TRUE);rm(CoverValue)
+
+
+GrazeClass_comb <- rbind(GrazedClass, ItemQualities);rm(GrazedClass, ItemQualities)
+GrazeClass_comb <- GrazeClass_comb%>% select(-SpeciesQualifier,-FieldQualifier, -SubElement, -Parameter, -Parameter2, -Parameter3,-CharValue, -CharValue2, -CharValue3,-Value2, -Value3)
+GrazeClass_comb$Element <-as.numeric(GrazeClass_comb$Element)
+
+```
+
+Add Pasture column to  
+```{r}
+StubbleHeight_comb$Pasture<- str_split(StubbleHeight_comb$Ancestry, ' > ', simplify = TRUE)[,4]
+GrazeClass_comb$Pasture<- str_split(GrazeClass_comb$Ancestry, ' > ', simplify = TRUE)[,4]
+StubbleHeight_comb$Date <- lubridate::mdy(StubbleHeight_comb$Date) 
+GrazeClass_comb$Date <- lubridate::mdy(GrazeClass_comb$Date) 
+# merge(x = StubbleHeight_comb, y = GrazeClass_comb[ , c("Date", "SpeciesName", "CommonName","SampleNumber","Value")], by = c("Date", "SpeciesName", "CommonName","SampleNumber"), all.x=TRUE)
+write.csv(StubbleHeight_comb,"C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/data/2021/stubbleheightSpring.xlsx")
+write.csv(GrazeClass_comb,"C:/Users/brand/Dropbox/2.Field_Research/SRER_R_Workshop/data/2021/GrazeClassSpring.xlsx")
+```
+# Table building
+Includes:
+1. Average use per transect for joining on ArcGIS
+2. Average use for each species per transect
+3. Use by pasture
+4. Average use for the top three most common species in each pasture
+
+```{r}
+path <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", "GY2021/", sep="")
+# Percentage Use by site to join with Arcgis site use. 
+# colnames(final)[4] <- "Class End-Point"
+GrazeClass_comb[is.na(GrazeClass_comb$Cover), ]  
+GrazeClass_comb$Cover <- GrazeClass_comb$Cover %>% replace_na("No Cover")
+GrazeClass_comb[is.na(GrazeClass_comb$Repeat), ]  
+GrazeClass_comb$Repeat <- GrazeClass_comb$Repeat %>% replace_na("New Plant")
+final<- GrazeClass_comb
+
+useaverage <- final %>% group_by(Date, Pasture, SiteID) %>%
+  summarize(`Percent Ungrazed Utilization` = round(79.9451-(0.8705*sum(Value < 1)), digits = 1),
+            `Percent Ungrazed Utilization Repeat` = round(79.9451-(0.8705*sum(Value[Repeat=="New Plant"] < 1)),
+                                                           digits = 1),
+            `Percent Ungrazed Utilization Accessible` = round(79.9451-(0.8705*sum(Value[Cover=="No Cover"] < 1)),
+                                                           digits = 1),
+            `Percent Ungrazed Utilization Repeat&Accessible` = round(79.9451-(0.8705*sum(Value[Repeat=="New Plant" & Cover=="No Cover"] < 1)),
+                                                           digits = 1),
+            `Graze Class Utilization` = round(sum(Value)/sum(Value > 0), digits = 1),
+            `Graze Class Utilization Repeat` = round(sum(Value[Repeat=="New Plant"])/sum(Value[Repeat=="New Plant"] > 0), digits = 1),
+            `Graze Class Utilization Accessible` = round(sum(Value[Cover=="No Cover"])/sum(Value[Cover=="No Cover"] > 0), digits = 1),
+            `Graze Class Utilization Repeat&Accessible` = round(sum(Value[Repeat=="New Plant" & Cover=="No Cover"])/sum(Value[Repeat=="New Plant" & Cover=="No Cover"] > 0), digits = 1)
+            )
+
+
+# write for use in ArcGIS 
+write.csv(x = useaverage, file = paste(path, "SiteUse.csv",sep = ""), row.names=FALSE)
+```
+
+
+```{r}
+# top species use 
+Speciesuseaverage <- final %>% group_by(SiteID, SpeciesName) %>% summarize(count = n(), mean = round(mean(Value)))
+Speciesuseaverage <- final %>% group_by(SiteID, SpeciesName) %>% summarize(count = n(), mean = round(mean(Value[Repeat=="New Plant" & Cover=="No Cover"])))
+
+require(data.table)
+d <- data.table(Speciesuseaverage, key="SiteID")
+d.out <- d[, .SD[mean %in% tail(sort(unique(mean)), 3)], by=SiteID]
+d.out <- d.out[order(d.out$SiteID,d.out$mean,decreasing = T)][order(d.out$SiteID,decreasing = F)]
+setnames(d.out, old = 'mean', 'Mean Use (%)')
+setnames(d.out, old = 'count', 'Percent of Count (%)')
+write.csv(x = d.out, file = paste(path, "AllSpeciesUse.csv",sep = ""), row.names=FALSE)
+```
+```{r}
+# Write to append to final document
+SiteUseMergeTopSpeciesUse <- left_join(useaverage, d.out, by = c("SiteID"))
+
+UseByTransect <- SiteUseMergeTopSpeciesUse %>% mutate(Transect=mapply(function(x,y)gsub(x,"",y) ,gsub(" ", "|",Pasture),SiteID)) %>%
+  select(Pasture, Transect, Date, `Percent Ungrazed Utilization`,"Top Species Used" = SpeciesName, `Percent of Count (%)`, `Mean Use (%)`) 
+UseByTransect <- UseByTransect[order(UseByTransect$Pasture,UseByTransect$Transect,decreasing = F),]
+write.csv(x = UseByTransect, file = paste(path, "SiteUseByTransect.csv",sep = ""), row.names=FALSE)
+
+```
+
+
+```{r}
+# Percentage of Use by Pasture
+pasture_average <- useaverage %>% group_by(Pasture) %>% summarize(year = round(mean(`Percent Ungrazed Utilization`))) 
+year <- "GY2021"
+data.table::setnames(pasture_average, old = "year", gsub("[/]", "", year))
+write.csv(x = pasture_average, file = paste(path, "PastureUse.csv",sep = ""), row.names=FALSE)
+```
+
+
+```{r}
+# count, mean - median, and proportion of the use at the site
+group_by(Speciesuseaverage,SiteID) %>% group_by(SiteID) %>%
+  mutate(pmean=round((count/sum(count))*mean(mean)))
+
+PastureSpeciesUse <- final %>% group_by(Pasture, SpeciesName) %>% summarize(count = n(), mean = round(mean(Value[Repeat=="New Plant" & Cover=="No Cover"]))) %>% mutate(Percent = round(count/sum(count)*100))
+P <- data.table(PastureSpeciesUse, key="Pasture")
+P.out <- P[, .SD[count %in% tail(sort(unique(count)), 3)], by=Pasture]
+P.out <- P.out[order(P.out$Pasture,P.out$count,decreasing = T)][order(P.out$Pasture,decreasing = T)]
+
+setnames(P.out, old = 'mean', 'Mean Use (%)');setnames(P.out, old = 'count', 'Total Count');setnames(P.out, old = 'Percent', 'Percent Count (%)')
+P.out
+write.csv(x = P.out, file = paste(path, "CommonSpeciesUse.csv",sep = ""), row.names=FALSE)
+
+```
+
+
+
+

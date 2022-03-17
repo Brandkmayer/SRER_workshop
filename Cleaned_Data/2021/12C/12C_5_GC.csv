@@ -1,0 +1,101 @@
+"","Species/Category Name","Species/Category Code","Qualifier","Transect","Sample","Class End-Point"
+"1","Aristida","ARIST",NA,1,1,0
+"2","Aristida","ARIST",NA,1,2,30
+"3","Aristida","ARIST",NA,1,3,70
+"4","Aristida","ARIST",NA,1,4,0
+"5","Eragrostis lehmanniana","ERLE",NA,1,5,10
+"6","Aristida","ARIST",NA,1,6,30
+"7","Aristida","ARIST",NA,1,7,50
+"8","Aristida","ARIST",NA,1,8,50
+"9","Aristida","ARIST",NA,1,9,70
+"10","Aristida","ARIST",NA,1,10,30
+"11","Aristida","ARIST",NA,1,11,10
+"12","Aristida","ARIST",NA,1,12,70
+"13","Bouteloua repens","BORE2",NA,1,13,30
+"14","Aristida","ARIST",NA,1,14,50
+"15","Aristida","ARIST",NA,1,15,70
+"16","Aristida","ARIST",NA,1,16,70
+"17","Aristida","ARIST",NA,1,17,30
+"18","Bouteloua repens","BORE2",NA,1,18,70
+"19","Aristida","ARIST",NA,1,19,70
+"20","Aristida","ARIST",NA,1,20,10
+"21","Bouteloua repens","BORE2",NA,1,21,50
+"22","Aristida","ARIST",NA,1,22,10
+"23","Eragrostis lehmanniana","ERLE",NA,1,23,30
+"24","Eragrostis lehmanniana","ERLE",NA,1,24,0
+"25","Aristida","ARIST",NA,1,25,10
+"26","Aristida","ARIST",NA,1,26,0
+"27","Bouteloua repens","BORE2",NA,1,27,30
+"28","Aristida","ARIST",NA,1,28,90
+"29","Bouteloua repens","BORE2",NA,1,29,0
+"30","Bouteloua repens","BORE2",NA,1,30,30
+"31","Bouteloua repens","BORE2",NA,1,31,50
+"32","Bouteloua repens","BORE2",NA,1,32,0
+"33","Bouteloua repens","BORE2",NA,1,33,30
+"34","Eragrostis lehmanniana","ERLE",NA,1,34,50
+"35","Bouteloua repens","BORE2",NA,1,35,10
+"36","Bouteloua repens","BORE2",NA,1,36,0
+"37","Bouteloua chondrosioides","BOCH",NA,1,37,30
+"38","Bouteloua repens","BORE2",NA,1,38,30
+"39","Bouteloua repens","BORE2",NA,1,39,10
+"40","Eragrostis lehmanniana","ERLE",NA,1,40,30
+"41","Eragrostis lehmanniana","ERLE",NA,1,41,70
+"42","Eragrostis lehmanniana","ERLE",NA,1,42,10
+"43","Bouteloua repens","BORE2",NA,1,43,30
+"44","Bouteloua repens","BORE2",NA,1,44,0
+"45","Aristida","ARIST",NA,1,45,0
+"46","Eragrostis lehmanniana","ERLE",NA,1,46,30
+"47","Aristida","ARIST",NA,1,47,0
+"48","Eragrostis lehmanniana","ERLE",NA,1,48,50
+"49","Aristida","ARIST",NA,1,49,0
+"50","Setaria macrostachya","SEMA5",NA,1,50,0
+"51","Setaria macrostachya","SEMA5",NA,1,51,0
+"52","Eragrostis lehmanniana","ERLE",NA,1,52,70
+"53","Digitaria californica","DICA8",NA,1,53,70
+"54","Setaria macrostachya","SEMA5",NA,1,54,70
+"55","Eragrostis lehmanniana","ERLE",NA,1,55,70
+"56","Bouteloua repens","BORE2",NA,1,56,0
+"57","Bouteloua repens","BORE2",NA,1,57,90
+"58","Digitaria californica","DICA8",NA,1,58,70
+"59","Setaria macrostachya","SEMA5",NA,1,59,70
+"60","Eragrostis lehmanniana","ERLE",NA,1,60,70
+"61","Eragrostis lehmanniana","ERLE",NA,1,61,50
+"62","Setaria macrostachya","SEMA5",NA,1,62,90
+"63","Digitaria californica","DICA8",NA,1,63,90
+"64","Bouteloua curtipendula","BOCU",NA,1,64,70
+"65","Eragrostis lehmanniana","ERLE",NA,1,65,70
+"66","Digitaria californica","DICA8",NA,1,66,70
+"67","Heteropogon contortus","HECO10",NA,1,67,70
+"68","Eragrostis lehmanniana","ERLE",NA,1,68,30
+"69","Bouteloua curtipendula","BOCU",NA,1,69,30
+"70","Muhlenbergia porteri","MUPO2",NA,1,70,0
+"71","Muhlenbergia porteri","MUPO2",NA,1,71,0
+"72","Eragrostis lehmanniana","ERLE",NA,1,72,0
+"73","Heteropogon contortus","HECO10",NA,1,73,0
+"74","Heteropogon contortus","HECO10",NA,1,74,0
+"75","Heteropogon contortus","HECO10",NA,1,75,0
+"76","Digitaria californica","DICA8",NA,1,76,50
+"77","Eragrostis lehmanniana","ERLE",NA,1,77,10
+"78","Digitaria californica","DICA8",NA,1,78,50
+"79","Eragrostis lehmanniana","ERLE",NA,1,79,30
+"80","Digitaria californica","DICA8",NA,1,80,70
+"81","Digitaria californica","DICA8",NA,1,81,10
+"82","Eragrostis lehmanniana","ERLE",NA,1,82,10
+"83","Eragrostis lehmanniana","ERLE",NA,1,83,30
+"84","Eragrostis lehmanniana","ERLE",NA,1,84,50
+"85","Eragrostis lehmanniana","ERLE",NA,1,85,50
+"86","Eragrostis lehmanniana","ERLE",NA,1,86,10
+"87","Bouteloua curtipendula","BOCU",NA,1,87,70
+"88","Eragrostis lehmanniana","ERLE",NA,1,88,90
+"89","Bouteloua curtipendula","BOCU",NA,1,89,30
+"90","Bouteloua curtipendula","BOCU",NA,1,90,30
+"91","Eragrostis lehmanniana","ERLE",NA,1,91,70
+"92","Bouteloua curtipendula","BOCU",NA,1,92,70
+"93","Eragrostis lehmanniana","ERLE",NA,1,93,70
+"94","Bouteloua curtipendula","BOCU",NA,1,94,70
+"95","Bouteloua curtipendula","BOCU",NA,1,95,50
+"96","Bouteloua curtipendula","BOCU",NA,1,96,0
+"97","Setaria macrostachya","SEMA5",NA,1,97,70
+"98","Bothriochloa barbinodis","BOBA3",NA,1,98,10
+"99","Setaria macrostachya","SEMA5",NA,1,99,70
+"100","Setaria macrostachya","SEMA5",NA,1,100,70

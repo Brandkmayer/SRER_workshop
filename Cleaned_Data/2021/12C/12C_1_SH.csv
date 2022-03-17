@@ -1,0 +1,401 @@
+"","Species/Category Name","Species/Category Code Code","Qualifier","Transect","Sample","Height"
+"1","Aristida","ARIST",NA,1,1,6.5
+"2","Aristida","ARIST",NA,1,1,10
+"3","Aristida","ARIST",NA,1,1,14.5
+"4","Aristida","ARIST",NA,1,1,18.5
+"5","Aristida","ARIST",NA,1,2,8
+"6","Aristida","ARIST",NA,1,2,7.5
+"7","Aristida","ARIST",NA,1,2,4.5
+"8","Aristida","ARIST",NA,1,2,2.5
+"9","Eragrostis lehmanniana","ERLE",NA,1,3,11
+"10","Eragrostis lehmanniana","ERLE",NA,1,3,10
+"11","Eragrostis lehmanniana","ERLE",NA,1,3,10
+"12","Eragrostis lehmanniana","ERLE",NA,1,3,7
+"13","Aristida","ARIST",NA,1,4,15
+"14","Aristida","ARIST",NA,1,4,15
+"15","Aristida","ARIST",NA,1,4,17
+"16","Aristida","ARIST",NA,1,4,18.5
+"17","Aristida","ARIST",NA,1,5,29
+"18","Aristida","ARIST",NA,1,5,34.5
+"19","Aristida","ARIST",NA,1,5,29
+"20","Aristida","ARIST",NA,1,5,24
+"21","Bouteloua eriopoda","BOER4",NA,1,6,52
+"22","Bouteloua eriopoda","BOER4",NA,1,6,42
+"23","Bouteloua eriopoda","BOER4",NA,1,6,48
+"24","Bouteloua eriopoda","BOER4",NA,1,6,42
+"25","Pennisetum ciliare","PECI",NA,1,7,16.5
+"26","Pennisetum ciliare","PECI",NA,1,7,23
+"27","Pennisetum ciliare","PECI",NA,1,7,18
+"28","Pennisetum ciliare","PECI",NA,1,7,19
+"29","Pennisetum ciliare","PECI",NA,1,8,7.5
+"30","Pennisetum ciliare","PECI",NA,1,8,5
+"31","Pennisetum ciliare","PECI",NA,1,8,10
+"32","Pennisetum ciliare","PECI",NA,1,8,5
+"33","Aristida","ARIST",NA,1,9,26
+"34","Aristida","ARIST",NA,1,9,21
+"35","Aristida","ARIST",NA,1,9,12
+"36","Aristida","ARIST",NA,1,9,20
+"37","Aristida","ARIST",NA,1,10,26
+"38","Aristida","ARIST",NA,1,10,21
+"39","Aristida","ARIST",NA,1,10,12
+"40","Aristida","ARIST",NA,1,10,20
+"41","Aristida","ARIST",NA,1,11,18
+"42","Aristida","ARIST",NA,1,11,20
+"43","Aristida","ARIST",NA,1,11,19
+"44","Aristida","ARIST",NA,1,11,17
+"45","Aristida","ARIST",NA,1,12,18
+"46","Aristida","ARIST",NA,1,12,20
+"47","Aristida","ARIST",NA,1,12,19
+"48","Aristida","ARIST",NA,1,12,17
+"49","Aristida","ARIST",NA,1,13,15
+"50","Aristida","ARIST",NA,1,13,10
+"51","Aristida","ARIST",NA,1,13,11
+"52","Aristida","ARIST",NA,1,13,8
+"53","Eragrostis lehmanniana","ERLE",NA,1,14,62
+"54","Eragrostis lehmanniana","ERLE",NA,1,14,55
+"55","Eragrostis lehmanniana","ERLE",NA,1,14,51
+"56","Eragrostis lehmanniana","ERLE",NA,1,14,29
+"57","Eragrostis lehmanniana","ERLE",NA,1,15,49
+"58","Eragrostis lehmanniana","ERLE",NA,1,15,59
+"59","Eragrostis lehmanniana","ERLE",NA,1,15,15
+"60","Eragrostis lehmanniana","ERLE",NA,1,15,16
+"61","Eragrostis lehmanniana","ERLE",NA,1,16,20
+"62","Eragrostis lehmanniana","ERLE",NA,1,16,29
+"63","Eragrostis lehmanniana","ERLE",NA,1,16,5
+"64","Eragrostis lehmanniana","ERLE",NA,1,16,10
+"65","Eragrostis lehmanniana","ERLE",NA,1,17,28
+"66","Eragrostis lehmanniana","ERLE",NA,1,17,52
+"67","Eragrostis lehmanniana","ERLE",NA,1,17,8
+"68","Eragrostis lehmanniana","ERLE",NA,1,17,7
+"69","Eragrostis lehmanniana","ERLE",NA,1,18,45
+"70","Eragrostis lehmanniana","ERLE",NA,1,18,9
+"71","Eragrostis lehmanniana","ERLE",NA,1,18,9
+"72","Eragrostis lehmanniana","ERLE",NA,1,18,14
+"73","Eragrostis lehmanniana","ERLE",NA,1,19,62
+"74","Eragrostis lehmanniana","ERLE",NA,1,19,57
+"75","Eragrostis lehmanniana","ERLE",NA,1,19,29
+"76","Eragrostis lehmanniana","ERLE",NA,1,19,35
+"77","Eragrostis lehmanniana","ERLE",NA,1,20,62
+"78","Eragrostis lehmanniana","ERLE",NA,1,20,57
+"79","Eragrostis lehmanniana","ERLE",NA,1,20,29
+"80","Eragrostis lehmanniana","ERLE",NA,1,20,35
+"81","Eragrostis lehmanniana","ERLE",NA,1,21,13
+"82","Eragrostis lehmanniana","ERLE",NA,1,21,13
+"83","Eragrostis lehmanniana","ERLE",NA,1,21,11
+"84","Eragrostis lehmanniana","ERLE",NA,1,21,14
+"85","Aristida","ARIST",NA,1,22,12
+"86","Aristida","ARIST",NA,1,22,12
+"87","Aristida","ARIST",NA,1,22,13
+"88","Aristida","ARIST",NA,1,22,5
+"89","Eragrostis lehmanniana","ERLE",NA,1,23,69
+"90","Eragrostis lehmanniana","ERLE",NA,1,23,71.5
+"91","Eragrostis lehmanniana","ERLE",NA,1,23,17
+"92","Eragrostis lehmanniana","ERLE",NA,1,23,13
+"93","Eragrostis lehmanniana","ERLE",NA,1,24,12
+"94","Eragrostis lehmanniana","ERLE",NA,1,24,6
+"95","Eragrostis lehmanniana","ERLE",NA,1,24,7
+"96","Eragrostis lehmanniana","ERLE",NA,1,24,5
+"97","Eragrostis lehmanniana","ERLE",NA,1,25,7
+"98","Eragrostis lehmanniana","ERLE",NA,1,25,5
+"99","Eragrostis lehmanniana","ERLE",NA,1,25,6
+"100","Eragrostis lehmanniana","ERLE",NA,1,25,14
+"101","Eragrostis lehmanniana","ERLE",NA,1,26,18
+"102","Eragrostis lehmanniana","ERLE",NA,1,26,7
+"103","Eragrostis lehmanniana","ERLE",NA,1,26,8
+"104","Eragrostis lehmanniana","ERLE",NA,1,26,14
+"105","Eragrostis lehmanniana","ERLE",NA,1,27,4
+"106","Eragrostis lehmanniana","ERLE",NA,1,27,6
+"107","Eragrostis lehmanniana","ERLE",NA,1,27,7
+"108","Eragrostis lehmanniana","ERLE",NA,1,27,9
+"109","Eragrostis lehmanniana","ERLE",NA,1,28,5
+"110","Eragrostis lehmanniana","ERLE",NA,1,28,4.5
+"111","Eragrostis lehmanniana","ERLE",NA,1,28,47
+"112","Eragrostis lehmanniana","ERLE",NA,1,28,8
+"113","Eragrostis lehmanniana","ERLE",NA,1,29,10.5
+"114","Eragrostis lehmanniana","ERLE",NA,1,29,7
+"115","Eragrostis lehmanniana","ERLE",NA,1,29,13
+"116","Eragrostis lehmanniana","ERLE",NA,1,29,35
+"117","Eragrostis lehmanniana","ERLE",NA,1,30,22
+"118","Eragrostis lehmanniana","ERLE",NA,1,30,8
+"119","Eragrostis lehmanniana","ERLE",NA,1,30,4
+"120","Eragrostis lehmanniana","ERLE",NA,1,30,8
+"121","Eragrostis lehmanniana","ERLE",NA,1,31,16
+"122","Eragrostis lehmanniana","ERLE",NA,1,31,7
+"123","Eragrostis lehmanniana","ERLE",NA,1,31,29
+"124","Eragrostis lehmanniana","ERLE",NA,1,31,29
+"125","Eragrostis lehmanniana","ERLE",NA,1,32,7.5
+"126","Eragrostis lehmanniana","ERLE",NA,1,32,9
+"127","Eragrostis lehmanniana","ERLE",NA,1,32,8
+"128","Eragrostis lehmanniana","ERLE",NA,1,32,8
+"129","Eragrostis lehmanniana","ERLE",NA,1,33,7.5
+"130","Eragrostis lehmanniana","ERLE",NA,1,33,8
+"131","Eragrostis lehmanniana","ERLE",NA,1,33,11.5
+"132","Eragrostis lehmanniana","ERLE",NA,1,33,9
+"133","Eragrostis lehmanniana","ERLE",NA,1,34,32
+"134","Eragrostis lehmanniana","ERLE",NA,1,34,31
+"135","Eragrostis lehmanniana","ERLE",NA,1,34,21.5
+"136","Eragrostis lehmanniana","ERLE",NA,1,34,72
+"137","Eragrostis lehmanniana","ERLE",NA,1,35,6
+"138","Eragrostis lehmanniana","ERLE",NA,1,35,10
+"139","Eragrostis lehmanniana","ERLE",NA,1,35,12
+"140","Eragrostis lehmanniana","ERLE",NA,1,35,10
+"141","Eragrostis lehmanniana","ERLE",NA,1,36,12
+"142","Eragrostis lehmanniana","ERLE",NA,1,36,13
+"143","Eragrostis lehmanniana","ERLE",NA,1,36,16
+"144","Eragrostis lehmanniana","ERLE",NA,1,36,12
+"145","Eragrostis lehmanniana","ERLE",NA,1,37,11
+"146","Eragrostis lehmanniana","ERLE",NA,1,37,7
+"147","Eragrostis lehmanniana","ERLE",NA,1,37,13
+"148","Eragrostis lehmanniana","ERLE",NA,1,37,10
+"149","Eragrostis lehmanniana","ERLE",NA,1,38,37
+"150","Eragrostis lehmanniana","ERLE",NA,1,38,21
+"151","Eragrostis lehmanniana","ERLE",NA,1,38,20
+"152","Eragrostis lehmanniana","ERLE",NA,1,38,21.5
+"153","Eragrostis lehmanniana","ERLE",NA,1,39,31
+"154","Eragrostis lehmanniana","ERLE",NA,1,39,15.5
+"155","Eragrostis lehmanniana","ERLE",NA,1,39,14
+"156","Eragrostis lehmanniana","ERLE",NA,1,39,25
+"157","Eragrostis lehmanniana","ERLE",NA,1,40,5
+"158","Eragrostis lehmanniana","ERLE",NA,1,40,5
+"159","Eragrostis lehmanniana","ERLE",NA,1,40,8
+"160","Eragrostis lehmanniana","ERLE",NA,1,40,8
+"161","Eragrostis lehmanniana","ERLE",NA,1,41,2
+"162","Eragrostis lehmanniana","ERLE",NA,1,41,3
+"163","Eragrostis lehmanniana","ERLE",NA,1,41,4
+"164","Eragrostis lehmanniana","ERLE",NA,1,41,2
+"165","Eragrostis lehmanniana","ERLE",NA,1,42,7
+"166","Eragrostis lehmanniana","ERLE",NA,1,42,4
+"167","Eragrostis lehmanniana","ERLE",NA,1,42,7
+"168","Eragrostis lehmanniana","ERLE",NA,1,42,1
+"169","Eragrostis lehmanniana","ERLE",NA,1,43,15
+"170","Eragrostis lehmanniana","ERLE",NA,1,43,7
+"171","Eragrostis lehmanniana","ERLE",NA,1,43,8
+"172","Eragrostis lehmanniana","ERLE",NA,1,43,8
+"173","Eragrostis lehmanniana","ERLE",NA,1,44,5
+"174","Eragrostis lehmanniana","ERLE",NA,1,44,5
+"175","Eragrostis lehmanniana","ERLE",NA,1,44,5
+"176","Eragrostis lehmanniana","ERLE",NA,1,44,6
+"177","Eragrostis lehmanniana","ERLE",NA,1,45,26
+"178","Eragrostis lehmanniana","ERLE",NA,1,45,9
+"179","Eragrostis lehmanniana","ERLE",NA,1,45,10
+"180","Eragrostis lehmanniana","ERLE",NA,1,45,2
+"181","Eragrostis lehmanniana","ERLE",NA,1,46,62
+"182","Eragrostis lehmanniana","ERLE",NA,1,46,68
+"183","Eragrostis lehmanniana","ERLE",NA,1,46,8
+"184","Eragrostis lehmanniana","ERLE",NA,1,46,5
+"185","Eragrostis lehmanniana","ERLE",NA,1,47,51
+"186","Eragrostis lehmanniana","ERLE",NA,1,47,6
+"187","Eragrostis lehmanniana","ERLE",NA,1,47,5
+"188","Eragrostis lehmanniana","ERLE",NA,1,47,5
+"189","Digitaria californica","DICA8",NA,1,48,14
+"190","Digitaria californica","DICA8",NA,1,48,10
+"191","Digitaria californica","DICA8",NA,1,48,10
+"192","Digitaria californica","DICA8",NA,1,48,10
+"193","Eragrostis lehmanniana","ERLE",NA,1,49,20
+"194","Eragrostis lehmanniana","ERLE",NA,1,49,16
+"195","Eragrostis lehmanniana","ERLE",NA,1,49,7
+"196","Eragrostis lehmanniana","ERLE",NA,1,49,9
+"197","Digitaria californica","DICA8",NA,1,50,17
+"198","Digitaria californica","DICA8",NA,1,50,25
+"199","Digitaria californica","DICA8",NA,1,50,14
+"200","Digitaria californica","DICA8",NA,1,50,26
+"201","Eragrostis lehmanniana","ERLE",NA,1,51,67
+"202","Eragrostis lehmanniana","ERLE",NA,1,51,12
+"203","Eragrostis lehmanniana","ERLE",NA,1,51,5
+"204","Eragrostis lehmanniana","ERLE",NA,1,51,12
+"205","Eragrostis lehmanniana","ERLE",NA,1,52,16
+"206","Eragrostis lehmanniana","ERLE",NA,1,52,11
+"207","Eragrostis lehmanniana","ERLE",NA,1,52,6
+"208","Eragrostis lehmanniana","ERLE",NA,1,52,16.5
+"209","Eragrostis lehmanniana","ERLE",NA,1,53,33
+"210","Eragrostis lehmanniana","ERLE",NA,1,53,31
+"211","Eragrostis lehmanniana","ERLE",NA,1,53,21
+"212","Eragrostis lehmanniana","ERLE",NA,1,53,32
+"213","Eragrostis lehmanniana","ERLE",NA,1,54,46
+"214","Eragrostis lehmanniana","ERLE",NA,1,54,70
+"215","Eragrostis lehmanniana","ERLE",NA,1,54,69
+"216","Eragrostis lehmanniana","ERLE",NA,1,54,43
+"217","Eragrostis lehmanniana","ERLE",NA,1,55,62
+"218","Eragrostis lehmanniana","ERLE",NA,1,55,72
+"219","Eragrostis lehmanniana","ERLE",NA,1,55,70
+"220","Eragrostis lehmanniana","ERLE",NA,1,55,26
+"221","Eragrostis lehmanniana","ERLE",NA,1,56,15
+"222","Eragrostis lehmanniana","ERLE",NA,1,56,6
+"223","Eragrostis lehmanniana","ERLE",NA,1,56,4
+"224","Eragrostis lehmanniana","ERLE",NA,1,56,8
+"225","Eragrostis lehmanniana","ERLE",NA,1,57,23
+"226","Eragrostis lehmanniana","ERLE",NA,1,57,8
+"227","Eragrostis lehmanniana","ERLE",NA,1,57,12
+"228","Eragrostis lehmanniana","ERLE",NA,1,57,14
+"229","Eragrostis lehmanniana","ERLE",NA,1,58,57
+"230","Eragrostis lehmanniana","ERLE",NA,1,58,17
+"231","Eragrostis lehmanniana","ERLE",NA,1,58,4
+"232","Eragrostis lehmanniana","ERLE",NA,1,58,9
+"233","Eragrostis lehmanniana","ERLE",NA,1,59,14
+"234","Eragrostis lehmanniana","ERLE",NA,1,59,9
+"235","Eragrostis lehmanniana","ERLE",NA,1,59,6
+"236","Eragrostis lehmanniana","ERLE",NA,1,59,12
+"237","Eragrostis lehmanniana","ERLE",NA,1,60,15
+"238","Eragrostis lehmanniana","ERLE",NA,1,60,12
+"239","Eragrostis lehmanniana","ERLE",NA,1,60,13
+"240","Eragrostis lehmanniana","ERLE",NA,1,60,9
+"241","Eragrostis lehmanniana","ERLE",NA,1,61,15
+"242","Eragrostis lehmanniana","ERLE",NA,1,61,15
+"243","Eragrostis lehmanniana","ERLE",NA,1,61,5
+"244","Eragrostis lehmanniana","ERLE",NA,1,61,10
+"245","Eragrostis lehmanniana","ERLE",NA,1,62,9
+"246","Eragrostis lehmanniana","ERLE",NA,1,62,5
+"247","Eragrostis lehmanniana","ERLE",NA,1,62,1
+"248","Eragrostis lehmanniana","ERLE",NA,1,62,7
+"249","Eragrostis lehmanniana","ERLE",NA,1,63,33
+"250","Eragrostis lehmanniana","ERLE",NA,1,63,1
+"251","Eragrostis lehmanniana","ERLE",NA,1,63,2
+"252","Eragrostis lehmanniana","ERLE",NA,1,63,6
+"253","Eragrostis lehmanniana","ERLE",NA,1,64,13
+"254","Eragrostis lehmanniana","ERLE",NA,1,64,9
+"255","Eragrostis lehmanniana","ERLE",NA,1,64,6
+"256","Eragrostis lehmanniana","ERLE",NA,1,64,6
+"257","Eragrostis lehmanniana","ERLE",NA,1,65,3
+"258","Eragrostis lehmanniana","ERLE",NA,1,65,2.5
+"259","Eragrostis lehmanniana","ERLE",NA,1,65,3
+"260","Eragrostis lehmanniana","ERLE",NA,1,65,14
+"261","Bothriochloa barbinodis","BOBA3",NA,1,66,56.5
+"262","Bothriochloa barbinodis","BOBA3",NA,1,66,61
+"263","Bothriochloa barbinodis","BOBA3",NA,1,66,60
+"264","Bothriochloa barbinodis","BOBA3",NA,1,66,49
+"265","Aristida","ARIST",NA,1,67,35
+"266","Aristida","ARIST",NA,1,67,29
+"267","Aristida","ARIST",NA,1,67,24
+"268","Aristida","ARIST",NA,1,67,22
+"269","Eragrostis lehmanniana","ERLE",NA,1,68,69
+"270","Eragrostis lehmanniana","ERLE",NA,1,68,65
+"271","Eragrostis lehmanniana","ERLE",NA,1,68,64
+"272","Eragrostis lehmanniana","ERLE",NA,1,68,56
+"273","Eragrostis lehmanniana","ERLE",NA,1,69,7
+"274","Eragrostis lehmanniana","ERLE",NA,1,69,8
+"275","Eragrostis lehmanniana","ERLE",NA,1,69,8
+"276","Eragrostis lehmanniana","ERLE",NA,1,69,7
+"277","Eragrostis lehmanniana","ERLE",NA,1,70,8
+"278","Eragrostis lehmanniana","ERLE",NA,1,70,6
+"279","Eragrostis lehmanniana","ERLE",NA,1,70,17
+"280","Eragrostis lehmanniana","ERLE",NA,1,70,23
+"281","Eragrostis lehmanniana","ERLE",NA,1,71,49
+"282","Eragrostis lehmanniana","ERLE",NA,1,71,23
+"283","Eragrostis lehmanniana","ERLE",NA,1,71,8
+"284","Eragrostis lehmanniana","ERLE",NA,1,71,57
+"285","Bothriochloa barbinodis","BOBA3",NA,1,72,8.5
+"286","Bothriochloa barbinodis","BOBA3",NA,1,72,8
+"287","Bothriochloa barbinodis","BOBA3",NA,1,72,8.5
+"288","Bothriochloa barbinodis","BOBA3",NA,1,72,51
+"289","Bothriochloa barbinodis","BOBA3",NA,1,73,56
+"290","Bothriochloa barbinodis","BOBA3",NA,1,73,72
+"291","Bothriochloa barbinodis","BOBA3",NA,1,73,66
+"292","Bothriochloa barbinodis","BOBA3",NA,1,73,61
+"293","Bothriochloa barbinodis","BOBA3",NA,1,74,16
+"294","Bothriochloa barbinodis","BOBA3",NA,1,74,7
+"295","Bothriochloa barbinodis","BOBA3",NA,1,74,14
+"296","Bothriochloa barbinodis","BOBA3",NA,1,74,10
+"297","Eragrostis lehmanniana","ERLE",NA,1,75,7
+"298","Eragrostis lehmanniana","ERLE",NA,1,75,7
+"299","Eragrostis lehmanniana","ERLE",NA,1,75,7.5
+"300","Eragrostis lehmanniana","ERLE",NA,1,75,6
+"301","Eragrostis lehmanniana","ERLE",NA,1,76,40
+"302","Eragrostis lehmanniana","ERLE",NA,1,76,41
+"303","Eragrostis lehmanniana","ERLE",NA,1,76,6
+"304","Eragrostis lehmanniana","ERLE",NA,1,76,45
+"305","Eragrostis lehmanniana","ERLE",NA,1,77,9
+"306","Eragrostis lehmanniana","ERLE",NA,1,77,39
+"307","Eragrostis lehmanniana","ERLE",NA,1,77,14
+"308","Eragrostis lehmanniana","ERLE",NA,1,77,46
+"309","Eragrostis lehmanniana","ERLE",NA,1,78,54
+"310","Eragrostis lehmanniana","ERLE",NA,1,78,16
+"311","Eragrostis lehmanniana","ERLE",NA,1,78,14
+"312","Eragrostis lehmanniana","ERLE",NA,1,78,9
+"313","Eragrostis lehmanniana","ERLE",NA,1,79,15
+"314","Eragrostis lehmanniana","ERLE",NA,1,79,11
+"315","Eragrostis lehmanniana","ERLE",NA,1,79,43
+"316","Eragrostis lehmanniana","ERLE",NA,1,79,16
+"317","Eragrostis lehmanniana","ERLE",NA,1,80,43
+"318","Eragrostis lehmanniana","ERLE",NA,1,80,6
+"319","Eragrostis lehmanniana","ERLE",NA,1,80,49
+"320","Eragrostis lehmanniana","ERLE",NA,1,80,42
+"321","Eragrostis lehmanniana","ERLE",NA,1,81,69
+"322","Eragrostis lehmanniana","ERLE",NA,1,81,42
+"323","Eragrostis lehmanniana","ERLE",NA,1,81,6
+"324","Eragrostis lehmanniana","ERLE",NA,1,81,48
+"325","Eragrostis lehmanniana","ERLE",NA,1,82,19
+"326","Eragrostis lehmanniana","ERLE",NA,1,82,57
+"327","Eragrostis lehmanniana","ERLE",NA,1,82,63
+"328","Eragrostis lehmanniana","ERLE",NA,1,82,54
+"329","Eragrostis lehmanniana","ERLE",NA,1,83,5
+"330","Eragrostis lehmanniana","ERLE",NA,1,83,4
+"331","Eragrostis lehmanniana","ERLE",NA,1,83,4
+"332","Eragrostis lehmanniana","ERLE",NA,1,83,9
+"333","Eragrostis lehmanniana","ERLE",NA,1,84,69
+"334","Eragrostis lehmanniana","ERLE",NA,1,84,7
+"335","Eragrostis lehmanniana","ERLE",NA,1,84,6
+"336","Eragrostis lehmanniana","ERLE",NA,1,84,7
+"337","Eragrostis lehmanniana","ERLE",NA,1,85,13
+"338","Eragrostis lehmanniana","ERLE",NA,1,85,67
+"339","Eragrostis lehmanniana","ERLE",NA,1,85,16
+"340","Eragrostis lehmanniana","ERLE",NA,1,85,12
+"341","Eragrostis lehmanniana","ERLE",NA,1,86,61
+"342","Eragrostis lehmanniana","ERLE",NA,1,86,44
+"343","Eragrostis lehmanniana","ERLE",NA,1,86,6
+"344","Eragrostis lehmanniana","ERLE",NA,1,86,8
+"345","Eragrostis lehmanniana","ERLE",NA,1,87,29
+"346","Eragrostis lehmanniana","ERLE",NA,1,87,12
+"347","Eragrostis lehmanniana","ERLE",NA,1,87,8
+"348","Eragrostis lehmanniana","ERLE",NA,1,87,22
+"349","Eragrostis lehmanniana","ERLE",NA,1,88,74
+"350","Eragrostis lehmanniana","ERLE",NA,1,88,11
+"351","Eragrostis lehmanniana","ERLE",NA,1,88,58
+"352","Eragrostis lehmanniana","ERLE",NA,1,88,25
+"353","Eragrostis lehmanniana","ERLE",NA,1,89,6
+"354","Eragrostis lehmanniana","ERLE",NA,1,89,7
+"355","Eragrostis lehmanniana","ERLE",NA,1,89,8
+"356","Eragrostis lehmanniana","ERLE",NA,1,89,41
+"357","Eragrostis lehmanniana","ERLE",NA,1,90,9
+"358","Eragrostis lehmanniana","ERLE",NA,1,90,10
+"359","Eragrostis lehmanniana","ERLE",NA,1,90,10
+"360","Eragrostis lehmanniana","ERLE",NA,1,90,14
+"361","Eragrostis lehmanniana","ERLE",NA,1,91,68
+"362","Eragrostis lehmanniana","ERLE",NA,1,91,10.5
+"363","Eragrostis lehmanniana","ERLE",NA,1,91,10
+"364","Eragrostis lehmanniana","ERLE",NA,1,91,45
+"365","Eragrostis lehmanniana","ERLE",NA,1,92,35
+"366","Eragrostis lehmanniana","ERLE",NA,1,92,16
+"367","Eragrostis lehmanniana","ERLE",NA,1,92,53
+"368","Eragrostis lehmanniana","ERLE",NA,1,92,69
+"369","Eragrostis lehmanniana","ERLE",NA,1,93,52
+"370","Eragrostis lehmanniana","ERLE",NA,1,93,8
+"371","Eragrostis lehmanniana","ERLE",NA,1,93,21
+"372","Eragrostis lehmanniana","ERLE",NA,1,93,39
+"373","Eragrostis lehmanniana","ERLE",NA,1,94,32
+"374","Eragrostis lehmanniana","ERLE",NA,1,94,28
+"375","Eragrostis lehmanniana","ERLE",NA,1,94,11
+"376","Eragrostis lehmanniana","ERLE",NA,1,94,39
+"377","Eragrostis lehmanniana","ERLE",NA,1,95,7
+"378","Eragrostis lehmanniana","ERLE",NA,1,95,5
+"379","Eragrostis lehmanniana","ERLE",NA,1,95,7
+"380","Eragrostis lehmanniana","ERLE",NA,1,95,6
+"381","Eragrostis lehmanniana","ERLE",NA,1,96,11
+"382","Eragrostis lehmanniana","ERLE",NA,1,96,4
+"383","Eragrostis lehmanniana","ERLE",NA,1,96,2
+"384","Eragrostis lehmanniana","ERLE",NA,1,96,5
+"385","Eragrostis lehmanniana","ERLE",NA,1,97,9
+"386","Eragrostis lehmanniana","ERLE",NA,1,97,5
+"387","Eragrostis lehmanniana","ERLE",NA,1,97,7
+"388","Eragrostis lehmanniana","ERLE",NA,1,97,5
+"389","Eragrostis lehmanniana","ERLE",NA,1,98,8
+"390","Eragrostis lehmanniana","ERLE",NA,1,98,6
+"391","Eragrostis lehmanniana","ERLE",NA,1,98,7
+"392","Eragrostis lehmanniana","ERLE",NA,1,98,7
+"393","Eragrostis lehmanniana","ERLE",NA,1,99,43
+"394","Eragrostis lehmanniana","ERLE",NA,1,99,8
+"395","Eragrostis lehmanniana","ERLE",NA,1,99,7
+"396","Eragrostis lehmanniana","ERLE",NA,1,99,7
+"397","Eragrostis lehmanniana","ERLE",NA,1,100,45
+"398","Eragrostis lehmanniana","ERLE",NA,1,100,43
+"399","Eragrostis lehmanniana","ERLE",NA,1,100,9
+"400","Eragrostis lehmanniana","ERLE",NA,1,100,4

@@ -1,0 +1,208 @@
+---
+title: "SRER_Utilization"
+author: "Brandon Mayer"
+date: "4/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(readr)
+library(googlesheets4)
+library(data.table)
+
+```
+### Enter the year you're interested in working on
+```{r, echo=FALSE}
+year <- 'GY2019/' 
+```
+
+# Collect original column names to add later 
+AND
+build tbl to pull meta data from
+```{r, include=FALSE}
+path <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/RAW_Data/", year, sep="")
+path2 <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", year, sep="")
+# files <- list.files(path = path, pattern = "*.csv", full.names = T, all.files = TRUE, recursive = TRUE)
+# tbl <- sapply(files, read_csv, simplify=FALSE)
+# 
+# colnames<- c(colnames(tbl[[1]]))
+# rm(files)
+```
+
+# Retrieve files from folders
+ - if files contain metadata inside the csv USE THIS!
+```{r, echo=FALSE,warning=FALSE,results=FALSE,message=FALSE}
+filedcsv <- list.files(path = path, pattern = "*.csv", full.names = T, all.files = TRUE, recursive = TRUE) %>%
+  lapply(function(x) {read_csv(x, col_names = TRUE)}) %>%
+  lapply(setNames, colnames)
+```
+
+# Make the final data frame for data wrangling
+Includes a lot of minor adjustments to get 
+```{r}
+final <- lapply(seq_along(filedcsv), function(i){
+  y <- as.data.frame(filedcsv[[i]][c(1,2,3), ])
+  x <- as.data.frame(filedcsv[[i]][-c(1,2,3), ])
+  # x$Date <- lubridate::ymd(strsplit(basename(names(tbl[i])), "[_]")[[1]][1])
+  x$Date <- lubridate::mdy(strsplit(y[2,1], "[:]")[[1]][2])
+  x$Year <- lubridate::year(x$Date)
+  x$Month <- lubridate::month(x$Date)
+  x$Pasture <- as.character(str_remove_all(strsplit(strsplit(y[1,1], "[-]")[[1]][1],"[>]")[[1]][3],"[ ]"))
+  ptrn <- paste0(unique(x$Pasture), collapse = '|')
+  x$Transect <- as.character(str_remove_all(str_remove_all(strsplit(y[1,1], "[-]")[[1]][2],ptrn), " ")) 
+  return(x)})  %>% bind_rows(.id = "id")
+#Old script for getting assigning pasture from sites
+# final$Pasture <- final$Site %>% 
+#   gsub('(C).*', '\\1', .) %>%
+#   gsub('(A).*', '\\1', .) %>% 
+#   gsub('(S).*', '\\1', .) %>% 
+#   gsub('(N).*', '\\1', .) %>% 
+#   gsub('(E).*', '\\1', .) %>% 
+#   gsub('(D).*', '\\1', .) %>% 
+#   gsub('(B).*', '\\1', .) %>% 
+#   gsub('(M).*', '\\1', .) %>%
+#   gsub('(o).*', '', .)
+
+path2 <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", year, sep="")
+
+```
+
+# Table building
+Includes:
+1. Average use per transect for joining on ArcGIS
+2. Average use for each species per transect
+3. Use by pasture
+4. Average use for the top three most common species in each pasture
+
+```{r}
+# ---------------------------------------------Percentage Use by site to join with Arcgis site use.----------------------------------------- 
+# colnames(final)[4] <- "Class End-Point"
+useaverage <- final %>% group_by(Year, Month,Pasture,Transect) %>%
+  summarize(`Percent Ungrazed Utilization` = round(79.9451-(0.8705*sum(`Class End-Point` < 1)), digits = 2),
+            `Graze Class Utilization` = round(sum(`Class End-Point`)/sum(`Class End-Point` > 0), digits = 2))
+# useaverage$PastureSite = paste0(useaverage$Pasture, useaverage$Site)
+write.csv(x = useaverage, file = paste(path2, "SiteUse.csv",sep = ""), row.names=FALSE)
+
+# -------------------------------------------------Average use for each species per transect ------------------------------------------------
+Speciesuseaverage <- final %>% group_by(Site, `Species/Category Name`) %>% summarize(count = n(), mean = round(mean(`Class End-Point`)))
+
+require(data.table)
+d <- data.table(Speciesuseaverage, key="Site")
+d.out <- d[, .SD[mean %in% tail(sort(unique(mean)), 3)], by=Site]
+setnames(d.out, old = 'mean', 'Mean Use (%)')
+setnames(d.out, old = 'count', 'Percent of Count (%)')
+write.csv(x = d.out, file = paste(path2, "AllSpeciesUse.csv",sep = ""), row.names=FALSE)
+
+# --------------------------------------------------------Percentage of Use by Pasture ------------------------------------------------------
+pasture_average <- useaverage %>% group_by(Pasture) %>% summarize(year = round(mean(`Percent Ungrazed Utilization`))) 
+data.table::setnames(pasture_average, old = "year", gsub("[/]", "", year))
+write.csv(x = pasture_average, file = paste(path2, "PastureUse.csv",sep = ""), row.names=FALSE)
+
+# ------------------------------------ Average use for the top three most common species in each pasture ------------------------------------
+group_by(Speciesuseaverage,Site) %>% 
+  mutate(pmean=(count/100)*mean("Mean Use"))
+
+PastureSpeciesUse <- final %>% group_by(Pasture, `Species/Category Name`) %>% summarize(count = n(), mean = round(mean(`Class End-Point`)))
+P <- data.table(PastureSpeciesUse, key="Pasture")
+P.out <- P[, .SD[count %in% tail(sort(unique(count)), 3)], by=Pasture]
+setnames(P.out, old = 'mean', 'Mean Use (%)')
+setnames(P.out, old = 'count', 'Total Count')
+P.out
+write.csv(x = P.out, file = paste(path2, "CommonSpeciesUse.csv",sep = ""), row.names=FALSE)
+
+```
+
+```{r}
+Use <- read_sheet("https://docs.google.com/spreadsheets/d/13UBBNXL4JfQbFNUmtU0sdcR-s1p4nayElb7o1Emh6oQ/edit?usp=sharing")
+Use$Pasture <-as.character(Use$Pasture) 
+Use$`Transect Name` <-as.character(Use$`Transect Name`)
+colnames(Use)[2] <- "Transect"
+
+# Split the df by year, correct naming for months and use, and change negative use values to "0"
+uselist <- useaverage %>% split(useaverage$Year)
+Y1 <- unique(uselist[[1]]$Year)
+Y2 <- unique(uselist[[2]]$Year)
+UseEarlySeason <- uselist[[1]] %>% pivot_wider(names_from = Year, values_from = c(Month,`Percent Ungrazed Utilization`)) %>% ungroup() %>% select(-c(`Graze Class Utilization`))
+names(UseEarlySeason)[names(UseEarlySeason)%like% "Month"] <- paste0("Month of Measure ",Y1)
+names(UseEarlySeason)[names(UseEarlySeason)%like% "Percent Ungrazed"] <- paste0("% Use ",Y1)
+UseEarlySeason[names(UseEarlySeason)%like% paste0("% Use ",Y1)] <- 0
+
+UseLateSeason <- uselist[[2]] %>% pivot_wider(names_from = Year, values_from = c(Month,`Percent Ungrazed Utilization`)) %>% ungroup() %>% select(-c(`Graze Class Utilization`))
+names(UseLateSeason)[names(UseLateSeason)%like% "Month"] <- paste0("Month of Measure ",Y2)
+names(UseLateSeason)[names(UseLateSeason)%like% "Percent Ungrazed"] <- paste0("% Use ",Y2)
+UseLateSeason[names(UseLateSeason)%like% paste0("% Use ",Y2)] <- 0
+
+# Add missing columns if necessary
+if(!paste0("Month of Measure ",Y1) %in% colnames(Use)){
+  Use <- Use %>% add_column(x = c(NA))
+  names(Use)[names(Use)%like% "x"] <- paste0("Month of Measure ",Y1)
+}
+if(!paste0("% Use ",Y1) %in% colnames(Use)){
+  Use <- Use %>% add_column(x = c(NA))
+  names(Use)[names(Use)%like% "x"] <- paste0("% Use ",Y1)
+}
+if(!paste0("Month of Measure ",Y2) %in% colnames(Use)){
+  Use <- Use %>% add_column(x = c(NA))
+  names(Use)[names(Use)%like% "x"] <- paste0("Month of Measure ",Y2)
+}
+if(!paste0("% Use ",Y2) %in% colnames(Use)){
+  Use <- Use %>% add_column(x = c(NA))
+  names(Use)[names(Use)%like% "x"] <- paste0("% Use ",Y2)
+}
+
+# Add missing values to each column 
+for(id in 1:nrow(UseEarlySeason[match(paste(Use$Pasture,Use$Transect),paste(UseEarlySeason$Pasture,UseEarlySeason$Transect)),3])){
+  if (is.na(Use[names(Use)%like% paste0("Month of Measure ",Y1)][id,][[1]])) {
+    Use[names(Use)%like% paste0("Month of Measure ",Y1)][id,] <- UseEarlySeason[match(paste(Use$Pasture,Use$Transect),paste(UseEarlySeason$Pasture,UseEarlySeason$Transect)),3][id,]
+  }
+}
+for(id in 1:nrow(UseEarlySeason[match(paste(Use$Pasture,Use$Transect),paste(UseEarlySeason$Pasture,UseEarlySeason$Transect)),4])){
+  if (is.na(Use[names(Use)%like% paste0("% Use ",Y1)][id,][[1]])) {
+    Use[names(Use)%like% paste0("% Use ",Y1)][id,] <- UseEarlySeason[match(paste(Use$Pasture,Use$Transect),paste(UseEarlySeason$Pasture,UseEarlySeason$Transect)),4][id,]
+  }
+}
+for(id in 1:nrow(UseLateSeason[match(paste(Use$Pasture,Use$Transect),paste(UseLateSeason$Pasture,UseLateSeason$Transect)),3])){
+  if (is.na(Use[names(Use)%like% paste0("Month of Measure ",Y2)][id,][[1]])) {
+    Use[names(Use)%like% paste0("Month of Measure ",Y2)][id,] <- UseLateSeason[match(paste(Use$Pasture,Use$Transect),paste(UseLateSeason$Pasture,UseLateSeason$Transect)),3][id,]
+  }
+}
+for(id in 1:nrow(UseLateSeason[match(paste(Use$Pasture,Use$Transect),paste(UseLateSeason$Pasture,UseLateSeason$Transect)),4])){
+  if (is.na(Use[names(Use)%like% paste0("% Use ",Y2)][id,][[1]])) {
+    Use[names(Use)%like% paste0("% Use ",Y2)][id,] <- UseLateSeason[match(paste(Use$Pasture,Use$Transect),paste(UseLateSeason$Pasture,UseLateSeason$Transect)),4][id,]
+  }
+}
+
+# Write the updated df to online google sheet
+sheet_write(Use, ss = "https://docs.google.com/spreadsheets/d/13UBBNXL4JfQbFNUmtU0sdcR-s1p4nayElb7o1Emh6oQ/edit?usp=sharing", sheet = "Utilization")
+```
+
+--------------------------------------------------------------------------Update Info Document-----------------------------------------------------------
+
+```{r}
+data <- read_sheet("https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing",sheet = "Layout")
+y <- str_replace(str_replace(year,"/",""),"GY","")
+if (!any(grep(y, data$Item.Name)>1)) {
+  
+  dataappend <- data.frame("Col." = c(max(data$Col.)+1,max(data$Col.)+2),
+    "Item.Name" = c(paste0("Month of Measure ",y),paste0("% Use ",y)),
+    "Item.Width" = c(10,10),
+    "Data.Type" = c("number","number"),
+    "Num.Dec" = c(0,2),
+    "Item.Description" = c(paste0("Month of utilization measurement in ",y),paste0("Percent utilization per transect in ",y))
+    )
+  data <- data %>% rbind(dataappend)
+}
+
+sheet_write(data, ss = "https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing", sheet = "Layout")
+
+#-------------------------------------------------------------------------Update Info--------------------------------------------------------------------
+
+data <- read_sheet("https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing",sheet = "Info")
+data[2,1] <- paste0(Sys.Date())
+sheet_write(data, ss = "https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing", sheet = "Info")
+
+```
+

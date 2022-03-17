@@ -1,0 +1,326 @@
+---
+title: "Production analysis using VGS data format sheeted to CSVs"
+author: "Brandon Mayer"
+date: "9/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(tidyverse)
+library(kableExtra)
+library(huxtable)
+```
+
+Assign the location of where the .xlsx files were sheeted or if "finalfolder" and "absol_path" is still in global environment continue to 
+"Comparative Yield" step  
+
+```{r}
+# finalfolder <- "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRER2021_sheeted"
+# finalfolder <- readline()
+# absol_path <- readline()
+
+
+```
+
+------------------------------------------------------------------------- CY Formulas -------------------------------------------------------------------
+
+Then run the chunk below to load the data into the "Weight" object.
+
+```{r}
+weights <- read.csv(list.files(absol_path,recursive = F,full.names = T, pattern = "Bag"))
+
+# Incase of formating errors Pasture is fixed as character data
+weights$Pasture <- as.character(weights$Pasture) 
+weights$Site <- as.character(weights$Transect)
+weights$`Wet.g.` <- as.double(weights$`Wet.g.`)
+weights
+# Creates the formula
+(sumarWeights<-weights %>% group_by(Pasture, Site)%>% summarise(formula =(lm(c(0,Value)~c(0,BagNum)))$coefficients[-1]));sumarWeights$Site <- as.character(sumarWeights$Site)
+```
+
+-------------------------------------------------------------------------------CY------------------------------------------------------------------------
+Load in comparative yield data
+```{r}
+allCY <- list.files(path = finalfolder, pattern = "CY",full.names = T)
+
+for (i in allCY) {
+  file <- read.csv(i)
+  base<- basename(i) # pasture_transect_method.csv
+  file$Pasture <- unlist(stringr::str_split(base,"_"))[2]
+  file$Site <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Pasture, Site, Rank) # once run all "Rank" columns will be changed in the sheeted copies
+  write.csv(file,i,row.names = F)
+}
+CYdf <- data.table::rbindlist(lapply(allCY, data.table::fread))
+
+TranCY <- transform(merge(CYdf, sumarWeights, by=c("Pasture","Site")), 
+                    Dry.wt = Rank * formula) %>% na.omit() 
+Production<- TranCY %>% group_by(Pasture, Site)%>% summarise("Production_kg/ha" = (mean(Dry.wt)*55.76*1.12085), "Production_lbs/ac" = (round(mean(Dry.wt)*55.76,digits = 2)))
+# 55.76 conversion cited from link below. 
+# https://vgs.arizona.edu/forum-topic/pounds-acre-using-40x40cm-plot
+
+# Where do you plan on  storing the results 
+ResultFolder <- paste0(dirname(finalfolder),"/Results");dir.create(ResultFolder);dir.create(paste0(ResultFolder,'/',year))
+
+```
+
+------------------------------------------------------------------------------DWR------------------------------------------------------------------------
+
+```{r}
+# allDWR <- list.files(path = "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRER2020_sheeted", pattern = "DWR",full.names = T)
+allDWR <- list.files(path = finalfolder, pattern = "DWR",full.names = T)
+
+for (i in allDWR) {
+  file <- read.csv(i)
+  base<- basename(i) # pasture_transect_method.csv
+  file$Pasture <- unlist(stringr::str_split(base,"_"))[2]
+  file$Site <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Pasture,Site, Species.Category.Name, Species.Category.Code,Transect,Sample, Rank)
+  write.csv(file,i,row.names = F)
+}
+
+
+DWRdf <- data.table::rbindlist(lapply(allDWR, data.table::fread))
+
+TranDWR <- DWRdf
+  TranDWR$RankCount[TranDWR$Rank == 1] <- 7; TranDWR$Rank[TranDWR$Rank == 1] <-"R1"
+  TranDWR$RankCount[TranDWR$Rank == 2] <- 2; TranDWR$Rank[TranDWR$Rank == 2] <-"R2"
+  TranDWR$RankCount[TranDWR$Rank == 3] <- 1; TranDWR$Rank[TranDWR$Rank == 3] <-"R3"
+  TranDWR$RankCount <- as.numeric(TranDWR$RankCount)
+  
+TranDWR$Species.Category.Name[grep("Arctostaphylos", TranDWR$Species.Category.Name)] <- "Arctostaphylos pungens"
+TranDWR$Species.Category.Code[grep("ARPU", TranDWR$Species.Category.Code)] <- "ARPU"
+TranDWR$Species.Category.Name[grep("Nolina", TranDWR$Species.Category.Name)] <- "Nolina"
+TranDWR$Species.Category.Code[grep("NOMI", TranDWR$Species.Category.Code)] <- "NOLIN"
+  
+DWRCounts<- TranDWR %>% group_by(Pasture, Site,Species.Category.Name,Species.Category.Code,Rank) %>% summarise("Wtd. Rank (#Hits)" = sum(RankCount)) %>% pivot_wider(names_from = Rank, values_from = "Wtd. Rank (#Hits)")
+DWRCounts$Wtd.Sum <- rowSums(DWRCounts[ , c(5:7)], na.rm=TRUE) 
+DWRTotal <- DWRCounts %>% group_by(Pasture, Site) %>% mutate("% Comp."=round(Wtd.Sum/sum(Wtd.Sum),digits = 4)*100)
+
+# If necessary, make a species list to group species  by growth habit and native status.
+# write.csv(data.frame(`Species/Category Name` = c(unique(DWRdf$Species.Category.Name)), Plant_type = c(NA), Native = c(NA)), paste0(absol_path,"/Specieslist.csv"), row.names = F)
+# 
+# SpecList <- read.csv(paste0(absol_path,"/Specieslist.csv"))
+
+# Organizing Counts in a wide form to visualize growth type relationships. 
+TranDWR <- merge(TranDWR, SpecList, by=c("Species.Category.Name"))
+GroupCounts<- TranDWR %>% group_by(Pasture, Site, Plant_type, Native) %>% summarise("TotalCounts" = sum(RankCount)) %>% na.omit()
+CountPercentlong<- GroupCounts %>% group_by(Pasture, Site) %>%mutate("Percent"=round(TotalCounts/sum(TotalCounts),digits = 2)) %>% select(-TotalCounts)
+CountPercentlong$Plant_type <- as.factor(CountPercentlong$Plant_type)
+#%>% subset(Plant_type == "Perennial Grasses"|Plant_type == "Annual Grasses") %>% select(!TotalCounts)
+CountPercentwide<-CountPercentlong %>% spread(Native, Percent) %>% replace(is.na(.), 0) %>% mutate(Total = Native+Introduced) %>% group_by(Plant_type)%>% group_split(unique(CountPercentlong$Plant_type))%>% reduce(full_join, by = c("Pasture","Site")) %>% select(Pasture,Site,"TotalPPFF" =Native.x,"TotalTRSH" =Native,"IntroducedPPGG"=Introduced.y,"NativePPGG"=Native.y,"TotalPPGG"=Total.y) 
+CountPercentwide[is.na(CountPercentwide)] <- 0
+
+```
+
+------------------------------------------------------------------------------FREQ-----------------------------------------------------------------------
+
+```{r}
+allFreq <- list.files(path = finalfolder, pattern = "Freq",full.names = T)
+for (i in allFreq) {
+  file <- read.csv(i)
+  base<- basename(i) # pasture_transect_method.csv
+  file$Pasture <- unlist(stringr::str_split(base,"_"))[2]
+  file$Site <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Pasture,Site, Species.Category.Name, Species.Category.Code,Transect,Sample, Hit)
+  write.csv(file,i,row.names = F)
+}
+
+Freqdf <- data.table::rbindlist(lapply(allFreq, data.table::fread))
+Freqdf$Species.Category.Name[Freqdf$Species.Category.Name=="Forb, annual"] <- "Annual forb(s)"
+Freqdf$Species.Category.Name[Freqdf$Species.Category.Name=="Grass, annual"] <- "Annual grass(es)"
+Freqdf$Species.Category.Code[Freqdf$Species.Category.Code=="2FA"] <- "AAFF"
+Freqdf$Species.Category.Code[Freqdf$Species.Category.Code=="2GA"] <- "AAGG"
+Freqdf$Transect[Freqdf$Transect == 1] <- "T1"; Freqdf$Transect[Freqdf$Transect == 3] <-"T3"
+Freqdf$Transect[Freqdf$Transect == 2] <- "T2"; Freqdf$Transect[Freqdf$Transect == 4] <-"T4"
+
+# If necessary aggregate similar species
+unique(Freqdf$Species.Category.Code)
+Freqdf$Species.Category.Name[grep("Arctostaphylos", Freqdf$Species.Category.Name)] <- "Arctostaphylos pungens"
+Freqdf$Species.Category.Code[grep("ARPU", Freqdf$Species.Category.Code)] <- "ARPU"
+Freqdf$Species.Category.Name[grep("Nolina", Freqdf$Species.Category.Name)] <- "Nolina"
+Freqdf$Species.Category.Code[grep("NOMI", Freqdf$Species.Category.Code)] <- "NOLIN"
+
+
+FreqTotal <- Freqdf %>% group_by(Pasture, Site, Species.Category.Name, Species.Category.Code,Transect)  %>% summarise("Counts" = sum(Hit))%>% pivot_wider(names_from = Transect, values_from = Counts) 
+FreqTotal$Total <- rowSums(FreqTotal[ , c(-1:-4)], na.rm=TRUE) 
+FreqTotal <- FreqTotal %>% group_by(Pasture, Site) %>%mutate("% Freq."=round(Total/sum(Total),digits = 4)*100)
+```
+
+-------------------------------------------------------------------------------PCG-----------------------------------------------------------------------
+
+```{r}
+allPGC <- list.files(path = finalfolder, pattern = "PGC",full.names = T)
+for (i in allPGC) {
+  file <- read.csv(i)
+  base<- basename(i) # pasture_transect_method.csv
+  file$Pasture <- unlist(stringr::str_split(base,"_"))[2]
+  file$Site <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Pasture,Site, Species.Category.Name, Species.Category.Code,Transect,Sample, Hit)
+  write.csv(file,i,row.names = F)
+}
+PGCdf <- data.table::rbindlist(lapply(allPGC, data.table::fread))
+PGCdf$Transect[PGCdf$Transect == 1] <- "T1"; PGCdf$Transect[PGCdf$Transect == 3] <-"T3"
+PGCdf$Transect[PGCdf$Transect == 2] <- "T2"; PGCdf$Transect[PGCdf$Transect == 4] <-"T4"
+Species<- unique(PGCdf$Species.Category.Name)[! unique(PGCdf$Species.Category.Name) %in% c("Litter", "Ground Cover - Gravel", "Bare Soil","Rock (>3\"\")")]
+
+PGCdf <-PGCdf %>% mutate(Species.Category.Name = case_when(Species.Category.Name %in% Species~ "Live Basal Veg",
+                                                      TRUE~Species.Category.Name))
+PGCTotal <- PGCdf %>% group_by(Pasture, Site, Species.Category.Name, Transect) %>% summarise("Total" = sum(Hit)) %>% pivot_wider(names_from = Transect, values_from = Total) 
+colnames(PGCTotal)[3] <- "Cover Class"
+PGCTotal$Total <- rowSums(PGCTotal[ , c(-1:-3)], na.rm=TRUE) 
+PGCTotal <- PGCTotal %>% group_by(Pasture, Site) %>% mutate("% Cover"=round(Total/sum(Total),digits = 4)*100)
+
+```
+-------------------------------------------------------------------------------CC------------------------------------------------------------------------
+```{r}
+allCC <- list.files(path = finalfolder, pattern = "CC",full.names = T)
+for (i in allCC) {
+  file <- read.csv(i)
+  base<- basename(i) # pasture_transect_method.csv
+  file$Pasture <- unlist(stringr::str_split(base,"_"))[2]
+  file$Site <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Pasture,Site, Species.Category.Name, Species.Category.Code,Transect,Sample, Cover.Est..Mid.Point)
+  write.csv(file,i,row.names = F)
+}
+
+CCdf <- data.table::rbindlist(lapply(allCC, data.table::fread))
+CCdf$Transect[CCdf$Transect == 1] <- "T1"; CCdf$Transect[CCdf$Transect == 3] <-"T3"
+CCdf$Transect[CCdf$Transect == 2] <- "T2"; CCdf$Transect[CCdf$Transect == 4] <-"T4"
+
+# If necessary aggregate similar species
+unique(CCdf$Species.Category.Name)
+CCdf$Species.Category.Name[grep("Arctostaphylos", CCdf$Species.Category.Name)] <- "Arctostaphylos pungens"
+CCdf$Species.Category.Code[grep("ARPU", CCdf$Species.Category.Code)] <- "ARPU"
+CCdf$Species.Category.Name[grep("Nolina", CCdf$Species.Category.Name)] <- "Nolina"
+CCdf$Species.Category.Code[grep("NOMI", CCdf$Species.Category.Code)] <- "NOLIN"
+
+CCdf$Transect <- as.factor(CCdf$Transect)
+CCdf <- CCdf %>% group_by(Pasture,Site,Transect,Species.Category.Name) %>% summarise(Sum = sum(Cover.Est..Mid.Point), MaxSamp = max(Sample)) %>% group_by(Pasture,Site,Transect) %>% mutate(PCover = Sum/max(MaxSamp))
+CCTotal <- CCdf %>% group_by(Pasture, Site, Species.Category.Name, Transect) %>% summarise("Total" = sum(PCover)) %>% pivot_wider(names_from = Transect, values_from = Total) %>% select(Pasture,Site, Species.Category.Name,T1, T2, T3, T4)
+CCTotal$Total <- rowSums(CCTotal[ , c(-1:-3)], na.rm=TRUE) 
+
+
+```
+------------------------------------------------------------------------------Fetch----------------------------------------------------------------------
+```{r}
+allFet <- list.files(path = finalfolder, pattern = "Fet",full.names = T)
+for (i in allFet) {
+  file <- read.csv(i)
+  base<- basename(i) # pasture_transect_method.csv
+  file$Pasture <- unlist(stringr::str_split(base,"_"))[2]
+  file$Site <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Pasture,Site,Transect,Sample, Measurement
+)
+  write.csv(file,i,row.names = F)
+}
+Fetdf <- data.table::rbindlist(lapply(allFet, data.table::fread))
+Fetdf$Transect[Fetdf$Transect == 1] <- "T1"; Fetdf$Transect[Fetdf$Transect == 3] <-"T3"
+Fetdf$Transect[Fetdf$Transect == 2] <- "T2"; Fetdf$Transect[Fetdf$Transect == 4] <-"T4"
+
+FetTotal <- Fetdf %>% group_by(Pasture,Site) %>% summarise(Average = mean(Measurement), SD = sd(Measurement), N = n()) %>% mutate(CI = qnorm(0.975)*SD/sqrt(N))
+```
+
+----------------------------------------------------------------------- Finished Products----------------------------------------------------------------
+
+```{r}
+#openxlsx::write.xlsx(Production, paste0(ResultFolder,"/",year,"/1.Production.xlsx"))
+Production
+openxlsx::write.xlsx(Production, paste0(ResultFolder,"/",year,"/1.Production_results.xlsx"), row.names = F)
+write.csv(Production, paste0(ResultFolder,"/",year,"/1.Production_results.csv"), row.names = F)
+
+CountPercentwide
+openxlsx::write.xlsx(CountPercentwide, paste0(ResultFolder,"/",year,"/2.CountPercent_results.xlsx"), row.names = F)
+write.csv(CountPercentwide, paste0(ResultFolder,"/",year,"/2.CountPercent_results.csv"), row.names = F)
+
+ProductionPercent <-left_join(Production,CountPercentwide, by = c("Pasture", "Site")) %>% select(Pasture, Site, TotalPPGG,NativePPGG,IntroducedPPGG,TotalPPFF,TotalTRSH,`Total Production lbs/ac`=`Production_lbs/ac`)
+ProductionPercent <- ProductionPercent %>% mutate(TotalPPGG = TotalPPGG * `Total Production lbs/ac`, NativePPGG = NativePPGG * `Total Production lbs/ac`,IntroducedPPGG = IntroducedPPGG * `Total Production lbs/ac`, TotalPPFF = TotalPPFF * `Total Production lbs/ac`,TotalTRSH = TotalTRSH * `Total Production lbs/ac`)
+openxlsx::write.xlsx(ProductionPercent, paste0(ResultFolder,"/",year,"/3.ProductionPercent.xlsx"), row.names = F)
+write.csv(ProductionPercent, paste0(ResultFolder,"/",year,"/3.ProductionPercent.csv"), row.names = F)
+
+PGCTotal
+openxlsx::write.xlsx(PGCTotal, paste0(ResultFolder,"/",year,"/4.PointCover_results.xlsx"), row.names = F)
+write.csv(PGCTotal, paste0(ResultFolder,"/",year,"/4.PointCover_results.csv"), row.names = F)
+
+FreqDWRJoin<- left_join(FreqTotal,DWRTotal)
+colnames(FreqDWRJoin)[3] <- "Species Name"
+colnames(FreqDWRJoin)[4] <- "Species Code"
+openxlsx::write.xlsx(FreqDWRJoin, paste0(ResultFolder,"/",year,"/5.FreqDWRComp_results.xlsx"), row.names = F)
+write.csv(FreqDWRJoin, paste0(ResultFolder,"/",year,"/5.FreqDWRComp_results.csv"), row.names = F)
+
+CCTotal <- CCTotal %>% select(Pasture,Site,`Species Names` = Species.Category.Name, T1,T2,T3,T4,Total)
+openxlsx::write.xlsx(CCTotal, paste0(ResultFolder,"/",year,"/6.CanopyCover_results.xlsx"), row.names = F)
+write.csv(CCTotal, paste0(ResultFolder,"/",year,"/6.CanopyCover_results.csv"), row.names = F)
+
+FetTotal
+openxlsx::write.xlsx(FetTotal, paste0(ResultFolder,"/",year,"/7.Fetch_results.xlsx"), row.names = F)
+write.csv(FetTotal, paste0(ResultFolder,"/",year,"/7.Fetch_results.csv"), row.names = F)
+```
+
+
+-----------------------------------------------------------------------Under Construction----------------------------------------------------------------
+
+Go into each file and format cells as you see fit. 
+```{r}
+library(RDCOMClient)
+xlApp <- COMCreate("Excel.Application")
+xlsxList <- list.files(paste0(ResultFolder,"/",year),pattern = ".xlsx",full.names = T)
+for (df in xlsxList) {
+  xlWbk <- xlApp$Workbooks()$Open(df)
+  xlWbk$ExportAsFixedFormat(Type = 0, 
+                            FileName = paste0(ResultFolder,"/",year,"/",gsub("xlsx","pdf",basename(df))),
+                            IgnorePrintAreas=FALSE)
+  xlWbk$Quit()                             # close Excel
+}
+
+```
+OR
+```{r}
+
+
+FinalTable <- final %>%
+  kbl(caption = "Grouped Compostion and Production by Site") %>%
+  kable_paper("hover",full_width = F, html_font = "Cambria",)%>%
+  footnote(general = "PPGG = Perennial Grasses, PPFF = Perennial Forbs, TRSH = Trees/Shrubs")
+PGCTable<- PGCTotal %>%
+  kbl(caption = "Point Cover by Site") %>%
+  kable_paper("hover",full_width = F, html_font = "Cambria",)%>%
+  footnote(general = " ")
+FreqDWRTable<-FreqDWRJoin %>%
+  kbl(caption = "Species Frequency and Composition by Site") %>%
+  kable_paper("hover",full_width = F, html_font = "Cambria",)%>%
+  footnote(general = "")%>%
+  add_header_above(c("Site" = 2,"Species" = 2,
+                     "Frequency" = length(which(grepl('T', colnames(FreqDWRJoin))&str_detect(colnames(FreqDWRJoin), ".*[0-9].*")))+2,
+                     "DWR" = length(which(grepl('R', colnames(FreqDWRJoin))&str_detect(colnames(FreqDWRJoin), ".*[0-9].*")))+2
+))
+
+```
+
+```{r}
+
+final %>%  
+      as_hux()%>%
+  merge_repeated_rows() %>% 
+  set_align(1, everywhere, "center") %>% 
+  set_tb_padding(1, everywhere, 0) %>% 
+  set_bold(1, everywhere)%>%
+      theme_basic()
+
+PGCTotal %>%  
+      as_hux()%>%
+  merge_repeated_rows() %>% 
+  set_align(1, everywhere, "center") %>% 
+  set_tb_padding(1, everywhere, 0) %>% 
+  set_bold(1, everywhere)%>%
+      theme_basic()
+FreqDWRJoin %>%  
+      as_hux()%>%
+  merge_repeated_rows() %>% 
+  set_align(1, everywhere, "center") %>% 
+  set_tb_padding(1, everywhere, 0) %>% 
+  set_bold(1, everywhere)%>%
+      theme_basic()
+```
+

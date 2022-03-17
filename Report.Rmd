@@ -1,0 +1,39 @@
+---
+title: "Report"
+author: "Brandon Mayer"
+date: "1/23/2022"
+output:
+  word_document: default
+  pdf_document: default
+always_allow_html: yes
+---
+```{r setup, include=FALSE,echo=FALSE,warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(kableExtra)
+wd<-"C:/Users/brand/Dropbox/Project_Data/Contretras"
+final <- read.csv(list.files(wd,full.names = T,recursive = T,pattern = glob2rx("*final*.csv*")))
+PGCTotal <- read.csv(list.files(wd,full.names = T,recursive = T,pattern = glob2rx("*Point*.csv*")))
+FreqDWRJoin <- read.csv(list.files(wd,full.names = T,recursive = T,pattern = glob2rx("*DWRComp*.csv*")))
+
+```
+
+```{r}
+kable(final,
+      "html",
+      booktabs = T,
+      align = c("c"))  %>%
+  kable_paper("hover",full_width = F, html_font = "Cambria",)%>%
+  footnote(general = "PPGG = Perennial Grasses, PPFF = Perennial Forbs, TRSH = Trees/Shrubs") 
+kable(PGCTotal,
+      "html",
+      booktabs = T,
+      align = c("c"))  %>%
+  kable_paper("hover",full_width = F, html_font = "Cambria",)
+kable(FreqDWRJoin,
+      "html",
+      booktabs = T,
+      align = c("c")) %>%
+  kable_paper("hover",full_width = F, html_font = "Cambria",)%>%
+  add_header_above(c("Site" = 2,"Species" = 2, "Frequency" = 6, "DWR" = 5))
+```

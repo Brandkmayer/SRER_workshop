@@ -1,0 +1,42 @@
+---
+title: "UtilizationYearCompare"
+author: "Brandon Mayer"
+date: "10/17/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Years interested in...
+
+```{r Years}
+year1 <- 'GY2018/'
+year2 <- 'GY2019/'
+year3 <- 'GY2020/'
+```
+
+Paths
+
+```{r pressure, echo=FALSE}
+path_y1 <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", year1, sep="")
+path_y2 <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", year2, sep="")
+path_y3 <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", year3, sep="")
+
+
+```
+
+```{r}
+PastUse1 <- read_csv(file = paste(path_y1, "PastureUse.csv",sep = ""))
+PastUse2 <- read_csv(file = paste(path_y2, "PastureUse.csv",sep = ""))
+PastUse3 <- read_csv(file = paste(path_y3, "PastureUse.csv",sep = ""))
+Ut_2years= merge(PastUse2,PastUse3, by="Pasture", all = T)
+
+```
+
+```{r}
+filename <-paste(names(Ut_2years), sep="", collapse="")
+write.csv(Ut_2years, paste0("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", filename,".csv" ), row.names = F)
+```
+
