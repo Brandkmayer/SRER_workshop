@@ -46,9 +46,14 @@ write.csv(Study_OEProcessed,"C:/Users/brand/Box/7. Heber Wild Horse Territory/20
 
 ```{r}
 Study_CovFreqProcessed <- Study_CovFreq %>% group_by(SiteID, Date, SpeciesName,Transect,SampleNumber) %>% summarise(Sum = sum(nValue,na.rm = T)) %>% group_by(SiteID,Date,SpeciesName) %>% summarise(Average = round(mean(Sum),digits = 1), SD = round(sd(Sum),digits = 1), N = n())
+
+Quadrats <-Study_CovFreq %>% group_by(SiteID, Date,Transect) %>% summarise(Quadrats = max(unique(SampleNumber)))%>% group_by(SiteID, Date) %>% summarise(TQ = sum(Quadrats))
+Study_CovFreqProcessed2 <- Study_CovFreq %>% group_by(SiteID, Date, SpeciesName) %>% summarise(Average = sum(nValue,na.rm = T)) %>% left_join(Quadrats,by = c("SiteID","Date")) %>% mutate(Percent=round(Average/TQ,digits = 2))
 Study_CovFreqProcessed[order(Study_CovFreqProcessed$SiteID,Study_CovFreqProcessed$SpeciesName,rev(Study_CovFreqProcessed$Date)),]
+
 write.csv(Study_CovFreq,"C:/Users/brand/Box/7. Heber Wild Horse Territory/2021_Results/Heber_2021_SpeciesCover_raw.csv")
-write.csv(Study_CovFreqProcessed,"C:/Users/brand/Box/7. Heber Wild Horse Territory/2021_Results/Heber_2021_SpeciesCover.csv")
+write.csv(Study_CovFreqProcessed,"C:/Users/brand/Box/7. Heber Wild Horse Territory/2021_Results/Heber_2021_SpeciesCanopyCover.csv")
+write.csv(Study_CovFreqProcessed,"C:/Users/brand/Box/7. Heber Wild Horse Territory/2021_Results/Heber_2021_SpeciesGroundCover.csv")
 
 ```
 
