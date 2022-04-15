@@ -1,0 +1,54 @@
+---
+title: "Heber 2021"
+author: "Brandon Mayer"
+date: '2022-04-15'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Supplemental code to process Heber data form 2021
+
+```{r cars}
+allfiles <- list.files("C:/Users/brand/Dropbox/Project_Data/Heber/sheeted",full.names = T)
+for (i in 1:length(allfiles)) assign(gsub(".csv","",basename(allfiles[i])), read.csv(allfiles[i]))
+
+```
+
+## Processing Landscape Appearance 
+
+```{r pressure, echo=FALSE}
+unique(Study_OE$Ancestry)
+Study_OE <- Study_OE %>% filter(ProtocolType == "Heber Vegetation Monitoring")%>% select(-c("X","EventType", "EventName","ProtocolName","SiteType","SiteStatus","SpeciesSymbol","FieldSymbol","SpeciesName","SpeciesQualifier","FieldQualifier","SubElement","cParameter","cParameter2","cParameter3","cValue","cValueCommon","cValue2","cValue2Common","cValue3","cValue3Common","nValue2","nValue3","DDLat","DDLong", "Ancestry"))
+unique(Study_OE$nValue)
+Study_OE$nValue[Study_OE$nValue == 1] <- 2.5
+Study_OE$nValue[Study_OE$nValue == 2] <- 13
+Study_OE$nValue[Study_OE$nValue == 3] <- 30.5
+Study_OE$nValue[Study_OE$nValue == 4] <- 50.5
+Study_OE$nValue[Study_OE$nValue == 5] <- 70.5
+Study_OE$nValue[Study_OE$nValue == 6] <- 87.5
+
+ 
+```
+```{r}
+Study_OEProcessed <-Study_OE %>% group_by(Date,SiteID) %>% summarise(Average = mean(nValue), SD = sd(nValue), N = n()) 
+Study_OEProcessed[order(Study_OEProcessed$SiteID,rev(Study_OEProcessed$Date)),]
+write.csv(Study_OE,"C:/Users/brand/Box/7. Heber Wild Horse Territory/2021_Results/Heber_2021_SiteLA_raw.csv")
+write.csv(Study_OEProcessed,"C:/Users/brand/Box/7. Heber Wild Horse Territory/2021_Results/Heber_2021_SiteLA.csv")
+
+```
+
+## Processing Cover
+
+
+```{r}
+Study_CovFreqProcessed <- Study_CovFreq %>% group_by(SiteID, Date, SpeciesName,Transect,SampleNumber) %>% summarise(Sum = sum(nValue,na.rm = T)) %>% group_by(SiteID,Date,SpeciesName) %>% summarise(Average = round(mean(Sum),digits = 1), SD = round(sd(Sum),digits = 1), N = n())
+Study_CovFreqProcessed[order(Study_CovFreqProcessed$SiteID,Study_CovFreqProcessed$SpeciesName,rev(Study_CovFreqProcessed$Date)),]
+write.csv(Study_CovFreq,"C:/Users/brand/Box/7. Heber Wild Horse Territory/2021_Results/Heber_2021_SpeciesCover_raw.csv")
+write.csv(Study_CovFreqProcessed,"C:/Users/brand/Box/7. Heber Wild Horse Territory/2021_Results/Heber_2021_SpeciesCover.csv")
+
+```
+

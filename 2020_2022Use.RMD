@@ -1,0 +1,146 @@
+---
+title: "Cleaning"
+author: "Brandon Mayer"
+date: '2022-04-12'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+absol_path<-"C:/Users/brand/Dropbox/Project_Data/SRER/Utilization study"
+path_to_xlsx<- "C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/RAW_Data/GY2021/VGS-Export_RAW_20220408.xlsx"
+finalfolder <-paste0(paste0(absol_path,"/","study_sheeted"));dir.create(finalfolder)
+```
+
+```{r}
+
+  sheet_names <- readxl::excel_sheets(path_to_xlsx)
+  # sheet_names <- readxl::excel_sheets(path_to_xlsx)[2:4]
+  # base <- gsub("\\..*","",basename(path_to_xlsx))
+  for (j in sheet_names) {
+    # j <- sheet_names[2]
+    data <- readxl::read_excel(path_to_xlsx, sheet=j)
+    if (j == "Cover frequency (by quadrat)") {
+      name <- "CovFreq"
+    }else if (j == "Comparative Yield") {
+      name <- "CY"
+    }else if (j == "Point Ground Cover") {
+      name <- "PGC"
+    }else if (j == "Stubble Height") {
+      name <- "SH"
+    }else if (j == "Generic Values") {
+      name <- "GV"
+    }else if (j == "!DEV - Categorical Class Freque") {
+      name <- "Cat"
+    }else if (j == "Grazed class") {
+      name <- "GC"
+    }else if (j == "Landscape Appearance   Key Fora") {
+      name <- "LA"
+    }else if (j == "Item Qualities") {
+      name <- "IQ"
+    }else if (j == "Frequency (by quadrat)") {
+      name <- "Freq"
+    }else if (j == "Ocular Estimates") {
+      name <- "OE"
+    }else if (j == "Exclusive CheckList") {
+      name <- "EC"
+    }else if (j == "Robel Pole VOM") {
+      name <- "RP"
+    }else if (j == "Fetch") {
+      name <- "Fet"
+    }else{
+      name <- "DWR (by quadrat)"
+    }
+    write.csv(data, file=paste0(finalfolder,"/","Study_",name,".csv"))
+  }
+
+```
+```{r}
+(allfiles<- list.files(finalfolder,full.names = T))
+
+for (i in 1:length(allfiles)) assign(gsub(".csv","",basename(allfiles[i])), read.csv(allfiles[i]))
+```
+
+```{r}
+GV2sub <- Study_GV2[Study_GV2$Element == 2,] %>% select(Date,SiteID,SampleNumber,RepeatPlant = SpeciesName)
+Study_GV2 <- Study_GV2[Study_GV2$Element == 1,] 
+Study_GV2 <- Study_GV2 %>% left_join(GV2sub,by = c("Date","SiteID","SampleNumber"))
+
+Study_GV2$RepeatPlant[is.na(Study_GV2$RepeatPlant)]<- "New Plant"
+Study_GV2<- Study_GV2 %>% select(Date, SiteID,Transect, SampleNumber, "Cover" = SpeciesName,RepeatPlant);rm(GV2sub)
+
+Study_GV2 <- read.csv(paste0(absol_path,"/Study_GV_2.csv")) %>% select(-X)
+
+```
+
+```{r}
+Study_GV <-Study_GV %>% select(-c(X,cParameter,cParameter2,cParameter3,cValueCommon,cValue2,cValue2Common,cValue3,cValue3Common,DDLat,DDLong)) %>% 
+  pivot_longer(cols = cValue:nValue3, 
+               values_to = "nValue")
+Study_GV$name[Study_GV$name == "cValue"] <- 1
+Study_GV$name[Study_GV$name == "nValue"] <- 2
+Study_GV$name[Study_GV$name == "nValue2"] <- 3
+Study_GV$name[Study_GV$name == "nValue3"] <- 4
+
+Study_SH <- Study_SH %>% select(-c(X,cParameter,cParameter2,cParameter3,cValueCommon,cValue2,cValue2Common,cValue3,cValue3Common,DDLat,DDLong))
+
+Study_GV<- Study_GV %>% group_by(ProtocolType,Date,Ancestry,SiteID,SpeciesSymbol,SpeciesName,Transect,SampleNumber) %>% summarize(Average = round(mean(nValue),digits = 1), SD = sd(nValue), N = n(), Max = max(nValue), Min = min(nValue))
+
+
+Study_SH <- Study_SH %>% group_by(ProtocolType,Date,Ancestry,SiteID,SpeciesSymbol,SpeciesName,Transect,SampleNumber) %>% summarize(Average = round(mean(nValue),digits = 1), SD = sd(nValue), N = n(), Max = max(nValue), Min = min(nValue))
+
+
+```
+```{r}
+Study_IQ <- Study_IQ %>% select(-c(X,ProtocolName,SpeciesQualifier,Element,cValue,SiteType,SiteStatus,cValue2,FieldQualifier,SubElement,cParameter,cParameter2,cParameter3,cValue3,cValue3Common,nValue2,nValue3,DDLat,DDLong))
+split(Study_IQ,f = Study_IQ$ProtocolType)
+
+
+Study_GC <- Study_GC %>% select(-c(X,ProtocolName,SpeciesQualifier,Element,cValue,SiteType,SiteStatus,cValue2,FieldQualifier,SubElement,cParameter,cParameter2,cParameter3,cValue3,FieldSymbol,cValueCommon,EventType,EventName,cValue2Common,cValue3Common,nValue2,nValue3,DDLat,DDLong))
+```
+
+```{r}
+x <- Study_SH %>% full_join(Study_GC,by = c("ProtocolType","Date","Ancestry","SiteID","SpeciesSymbol","SpeciesName","SampleNumber","Transect"))
+y <- x %>% full_join(Study_GV2,by = c("Date","SiteID","SampleNumber","Transect"))
+write.csv(x,paste0(absol_path,"/Study_SHGC.csv"))
+write.csv(y,paste0(absol_path,"/Study_SHGCGV.csv"))
+
+x <- Study_IQ %>% full_join(Study_GV,by = c("ProtocolType","Date","Ancestry","SiteID","SpeciesSymbol","SpeciesName","Transect","SampleNumber"))
+write.csv(x,paste0(absol_path,"/Study_IQGV.csv"))
+
+```
+```{r}
+x$nValue[x$nValue == 5] <- 10
+x$nValue[x$nValue == 20] <- 30
+x$nValue[x$nValue == 40] <- 50
+x$nValue[x$nValue == 60] <- 70
+x$nValue[x$nValue == 80] <- 90
+x <- read.csv(paste0(absol_path,"/Study_SHGCGV.csv"))
+
+useaverage <- x %>% group_by(Date, Pasture, SiteID) %>%
+  summarize(`Percent Ungrazed Utilization` = round(79.9451-(0.8705*sum(Value < 1,na.rm = T)), digits = 1),
+            `Percent Ungrazed Utilization Repeat` = round(79.9451-(0.8705*sum(Value[Repeat=="New Plant"] < 1,na.rm = T)),
+                                                           digits = 1),
+            `Percent Ungrazed Utilization Accessible` = round(79.9451-(0.8705*sum(Value[Cover=="No Cover"] < 1,na.rm = T)),
+                                                           digits = 1),
+            `Percent Ungrazed Utilization Repeat&Accessible` = round(79.9451-(0.8705*sum(Value[Repeat=="New Plant" & Cover=="No Cover"] < 1,na.rm = T)),
+                                                           digits = 1),
+            `Graze Class Utilization` = round(sum(Value,na.rm = T)/sum(Value > 0,na.rm = T), digits = 1),
+            `Graze Class Utilization Repeat` = round(sum(Value[Repeat=="New Plant"],na.rm = T)/sum(Value[Repeat=="New Plant"] > 0,na.rm = T), digits = 1),
+            `Graze Class Utilization Accessible` = round(sum(Value[Cover=="No Cover"],na.rm = T)/sum(Value[Cover=="No Cover"] > 0,na.rm = T), digits = 1),
+            `Graze Class Utilization Repeat&Accessible` = round(sum(Value[Repeat=="New Plant" & Cover=="No Cover"],na.rm = T)/sum(Value[Repeat=="New Plant" & Cover=="No Cover"] > 0,na.rm = T), digits = 1)
+            )
+write.csv(useaverage,paste0(absol_path,"/Study_SHGCGVRESULTS.csv"))
+
+```
+
