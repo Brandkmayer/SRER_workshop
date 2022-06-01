@@ -65,7 +65,8 @@ GC2021 %>% group_by(Date, Pasture,SiteID)%>% summarise("Count" = n() ) %>% arran
 Second set of SRER data 
 
 ```{r}
-path <- "C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/RAW_Data/GY2021/Bulk_Raw_Export/VGS-Export_RAW_20210420_174743_COPY.xlsx"
+# path <- "C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/RAW_Data/GY2021/Bulk_Raw_Export/VGS-Export_RAW_20210420_174743_COPY.xlsx"
+path <- "C:/Users/brand/Documents/2.Document_Storage/GFDP"
 sheets<-excel_sheets(path = path)
 # paste0(strsplit(strsplit(sheets, ' ')[[2]], '')[[1]][1],strsplit(strsplit(sheets, ' ')[[2]], '')[[2]][1])
 

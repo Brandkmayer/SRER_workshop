@@ -1,0 +1,85 @@
+---
+title: "XDiamond_DumpPastures"
+author: "Brandon Mayer"
+date: '2022-04-25'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(readr)
+library(data.table)
+library(fs)
+library(readxl)
+library(openxlsx)
+
+```
+
+# Assign thew year of interest
+```{r cars}
+year <- '2022' 
+```
+
+# Conver excel into 
+
+```{r pressure, echo=FALSE}
+home<- as.character(path_home())
+# Store data in the correct 
+path <- paste0(home,"/Box/Ruyle_lab/XDiamond/GFDP/RAW_Data/Utilization/", year);dir.create(path)
+path2 <- paste0(home,"/Box/Ruyle_lab/XDiamond/GFDP/Processed_data/");dir.create(path2)
+files <- list.files(path = path, pattern = ".xlsx", full.names = T, all.files = TRUE, recursive = TRUE)
+# tbl <- sapply(files, read_csv, simplify=FALSE)
+```
+# Data merging and updating with metadata
+```{r}
+Listed_data <- list()
+for (i in 1:length(files)) {
+  path_to_xlsx <- files[i]
+  #path_to_xlsx <- "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRERexl2021/20211001_UAE_T1.xlsx"
+  metadata <- readxl::read_excel(path_to_xlsx, sheet = 1)
+  Pasture <- trimws(sub('-.*', '\\1',sub('.*>', '\\1', metadata[1,1])))
+  #Transect <- tail(unlist(stringr::str_split(metadata[1,1]," ")), n=1) 
+  Transect <- trimws(sub('.*-', '\\1',sub('.*>', '\\1', metadata[1,1])))
+  date <- format(strptime(gsub(" ","",as.character(sub('.*:', '\\1', metadata[2,1]))), format="%m/%d/%Y"), "%Y-%m-%d")
+  data <- readxl::read_excel(path_to_xlsx, sheet = 2)
+  data$Pasture <- Pasture;data$Transect <- Transect;data$date <- date
+  Listed_data[[i]]<- data
+}
+
+all_data <-rbindlist(Listed_data)
+```
+
+# Analysis
+```{r}
+Transect_results <- all_data %>% group_by(date,Pasture, Transect) %>% summarise(Average = round(mean(`Class End-Point`),digits = 1), SD = round(sd(`Class End-Point`),digits = 1), N = n()) %>% mutate(CI = paste(round(Average -qt(p=0.05/2, df=N-1,lower.tail=F)*(SD/sqrt(N)),digits = 1),"-",round(Average +qt(p=0.05/2, df=N-1,lower.tail=F)*(SD/sqrt(N)),digits = 1)))
+)
+date_name<- paste0(unique(Transect_results$date),"_Use")
+```
+
+
+```{r}
+wb <- createWorkbook()
+addWorksheet(wb, paste0(year))
+hs1 <- createStyle(fgFill = "#4F81BD", halign = "CENTER", textDecoration = "Bold",
+    border = "Bottom", fontColour = "white")
+writeDataTable(wb, sheet = paste0(year),headerStyle = hs1, Transect_results, startRow = 1, startCol = 1)
+setColWidths(wb, sheet = paste0(year), cols = 2:7, widths = "auto")
+saveWorkbook(wb, file = paste0(path2,"Utilization.xlsx"), overwrite = TRUE)
+
+```
+
+# Add new Use to Yearly Use 
+```{r}
+Roll_new <- Results %>% select(Pasture,Transect,date,Average)
+Roll_new$Transect <- as.integer(Roll_new$Transect);colnames(Roll_new)[4] <- paste0(year," Use");colnames(Roll_new)[3] <- paste0(year," Sampling")
+
+RollPath <- gsub(paste0("Processed_data/"),"",path2)
+Roll_updated <- readxl::read_excel(paste0(RollPath,"Yearly_Monitoring.xlsx"), sheet = "Yearly_Use")%>% left_join(Roll_new, by = c("Pasture","Transect"))
+write.xlsx(Roll_updated, file=paste0(RollPath,"Yearly_Monitoring.xlsx"), sheet = "Yearly_Use")
+wb <- loadWorkbook(paste0(RollPath,"Yearly_Monitoring.xlsx"))
+writeData(wb, sheet = "Yearly_Use", Roll_updated, colNames = T)
+saveWorkbook(wb,paste0(RollPath,"Yearly_Monitoring.xlsx"),overwrite = T)
+```
+

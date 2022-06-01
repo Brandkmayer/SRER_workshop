@@ -22,14 +22,16 @@ year <- 'GY2019/'
 # Collect original column names to add later 
 AND
 build tbl to pull meta data from
+
 ```{r, include=FALSE}
-path <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/RAW_Data/", year, sep="")
-path2 <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", year, sep="")
+path <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Project_Data/SRER/Utilization/RAW_Data/", year, sep="")
+path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Project_Data/SRER/Utilization/Processed_data/", year, sep="")
 # files <- list.files(path = path, pattern = "*.csv", full.names = T, all.files = TRUE, recursive = TRUE)
 # tbl <- sapply(files, read_csv, simplify=FALSE)
 # 
 # colnames<- c(colnames(tbl[[1]]))
 # rm(files)
+
 ```
 
 # Retrieve files from folders
@@ -66,8 +68,7 @@ final <- lapply(seq_along(filedcsv), function(i){
 #   gsub('(M).*', '\\1', .) %>%
 #   gsub('(o).*', '', .)
 
-path2 <- paste("C:/Users/brand/Dropbox/Project_Data/SRER/Utilization/Processed_data/", year, sep="")
-
+path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Project_Data/SRER/Utilization/Processed_data/", year, sep="")
 ```
 
 # Table building
@@ -177,11 +178,26 @@ for(id in 1:nrow(UseLateSeason[match(paste(Use$Pasture,Use$Transect),paste(UseLa
 
 # Write the updated df to online google sheet
 sheet_write(Use, ss = "https://docs.google.com/spreadsheets/d/13UBBNXL4JfQbFNUmtU0sdcR-s1p4nayElb7o1Emh6oQ/edit?usp=sharing", sheet = "Utilization")
+
+Use <- as.data.frame(Use) 
+Use[is.na(Use)] <- ""
+
+xlsx::write.xlsx(Use, paste0(dirname(path.expand('~')),"/Box/1.Ruyle_lab/10. Santa Rita Experimental Range/Archives/Yearly Utilization.xlsx"), sheetName="Utilization",row.names = F,  append=F)
+
 ```
 
---------------------------------------------------------------------------Update Info Document-----------------------------------------------------------
+--------------------------------------------------------------Update Info Document----------------------------------------------------
 
 ```{r}
+#-------------------------------------------------------------Date Updated------------------------------------------------------------
+
+data <- read_sheet("https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing",sheet = "Info")
+data[2,1] <- paste0(Sys.Date())
+sheet_write(data, ss = "https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing", sheet = "Info")
+
+xlsx::write.xlsx(Use, paste0(dirname(path.expand('~')),"/Box/1.Ruyle_lab/10. Santa Rita Experimental Range/Archives/percentgrassutilizationstartingin2010.xlsx"), sheetName="Info",row.names = F,  append=F)
+
+#-------------------------------------------------------------Meta data---------------------------------------------------------------
 data <- read_sheet("https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing",sheet = "Layout")
 y <- str_replace(str_replace(year,"/",""),"GY","")
 if (!any(grep(y, data$Item.Name)>1)) {
@@ -198,11 +214,7 @@ if (!any(grep(y, data$Item.Name)>1)) {
 
 sheet_write(data, ss = "https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing", sheet = "Layout")
 
-#-------------------------------------------------------------------------Update Info--------------------------------------------------------------------
-
-data <- read_sheet("https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing",sheet = "Info")
-data[2,1] <- paste0(Sys.Date())
-sheet_write(data, ss = "https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing", sheet = "Info")
-
+xlsx::write.xlsx(Use, paste0(dirname(path.expand('~')),"/Box/1.Ruyle_lab/10. Santa Rita Experimental Range/Archives/percentgrassutilizationstartingin2010.xlsx"), sheetName="Layout",row.names = F,  append=F)
 ```
+
 
