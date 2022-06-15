@@ -16,7 +16,7 @@ library(data.table)
 ```
 ### Enter the year you're interested in working on
 ```{r, echo=FALSE}
-year <- 'GY2019/' 
+year <- 'GY2022/' 
 ```
 
 # Collect original column names to add later 
@@ -24,8 +24,8 @@ AND
 build tbl to pull meta data from
 
 ```{r, include=FALSE}
-path <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Project_Data/SRER/Utilization/RAW_Data/", year, sep="")
-path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Project_Data/SRER/Utilization/Processed_data/", year, sep="")
+path <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Utilization/RAW_Data/", year, sep="")
+path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Utilization/Processed_data/", year, sep="");dir.create(path = paste0(path2))
 # files <- list.files(path = path, pattern = "*.csv", full.names = T, all.files = TRUE, recursive = TRUE)
 # tbl <- sapply(files, read_csv, simplify=FALSE)
 # 
@@ -37,13 +37,13 @@ path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Project_Data/SRER/Uti
 # Retrieve files from folders
  - if files contain metadata inside the csv USE THIS!
 ```{r, echo=FALSE,warning=FALSE,results=FALSE,message=FALSE}
-filedcsv <- list.files(path = path, pattern = "*.csv", full.names = T, all.files = TRUE, recursive = TRUE) %>%
-  lapply(function(x) {read_csv(x, col_names = TRUE)}) %>%
-  lapply(setNames, colnames)
+# filedcsv <- list.files(path = path, pattern = "*.csv", full.names = T, all.files = TRUE, recursive = TRUE) %>%
+#   lapply(function(x) {read_csv(x, col_names = TRUE)}) %>%
+#   lapply(setNames, colnames)
 ```
 
 # Make the final data frame for data wrangling
-Includes a lot of minor adjustments to get 
+Includes a lot of minor adjustments 
 ```{r}
 final <- lapply(seq_along(filedcsv), function(i){
   y <- as.data.frame(filedcsv[[i]][c(1,2,3), ])
@@ -68,7 +68,26 @@ final <- lapply(seq_along(filedcsv), function(i){
 #   gsub('(M).*', '\\1', .) %>%
 #   gsub('(o).*', '', .)
 
-path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Project_Data/SRER/Utilization/Processed_data/", year, sep="")
+path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Utilization/Processed_data/", year, sep="")
+```
+
+# Retrieve bulk export files and cleaning
+```{r}
+filedxlsx <- list.files(path = path, full.names = T, all.files = TRUE, recursive = TRUE) %>%
+  lapply(function(x) {readxl::read_excel(x, col_names = TRUE)})
+
+final <- rbindlist(filedxlsx) %>% select(Date,Ancestry, "Transect"=SiteID,SpeciesSymbol, `Species/Category Name` = SpeciesName, SampleNumber,cValueCommon,cValue2Common,`Class End-Point` = nValue)
+final$cValue2Common[is.na(final$cValue2Common)] <- "No Cover"
+final$Pasture <- as.character(str_remove_all(str_split_fixed(final$Ancestry, ">",4)[,4],"[ ]"))
+final$Date <- lubridate::mdy(final$Date) 
+final <- final %>% drop_na(`Class End-Point`) %>% mutate("Month" = lubridate::month(Date),"Year" = lubridate::year(Date))
+final <- final %>% group_by(Pasture) %>% filter(Year == max(Year))
+final <-final %>% mutate(`Class End-Point` = case_when(`Class End-Point`==0~0,
+                                               `Class End-Point`==5~10,
+                                               `Class End-Point`==20~30,
+                                               `Class End-Point`==40~50,
+                                               `Class End-Point`==60~70,
+                                               `Class End-Point`==80~90))
 ```
 
 # Table building
@@ -83,28 +102,38 @@ Includes:
 # colnames(final)[4] <- "Class End-Point"
 useaverage <- final %>% group_by(Year, Month,Pasture,Transect) %>%
   summarize(`Percent Ungrazed Utilization` = round(79.9451-(0.8705*sum(`Class End-Point` < 1)), digits = 2),
-            `Graze Class Utilization` = round(sum(`Class End-Point`)/sum(`Class End-Point` > 0), digits = 2))
+            `Graze Class Utilization` = round(sum(`Class End-Point`)/n(), digits = 2)) %>% 
+  mutate(`Percent Ungrazed Utilization` = case_when(`Percent Ungrazed Utilization` < 0 ~ 0,
+                                               TRUE ~ as.numeric(as.character(`Percent Ungrazed Utilization`))))
+useaverage$Transect <- str_replace(useaverage$Transect,"D","")
 # useaverage$PastureSite = paste0(useaverage$Pasture, useaverage$Site)
 write.csv(x = useaverage, file = paste(path2, "SiteUse.csv",sep = ""), row.names=FALSE)
 
+base<-read_csv(paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Utilization/TransectUTM.csv", sep="")) %>% select(-"Shape_1")
+useaverage2 <- useaverage
+# useaverage2$tran_num<- paste0(useaverage2$Pasture,useaverage2$Transect)
+# useaverage2$tran_num[str_detect(useaverage2$tran_num, "^6E")]<-paste0(useaverage2$tran_num,"_")
+# useaverage2$tran_num[str_detect(useaverage2$tran_num, "^12E")]<-paste0(useaverage2$tran_num,"_")
+base<- base %>% left_join(useaverage2 %>% ungroup() %>% select(tran_num,"GY2022"= `Percent Ungrazed Utilization`), by="tran_num")
+write.csv(as.data.frame(base),paste0(path2,"TransectU.csv"),row.names = F)
 # -------------------------------------------------Average use for each species per transect ------------------------------------------------
-Speciesuseaverage <- final %>% group_by(Site, `Species/Category Name`) %>% summarize(count = n(), mean = round(mean(`Class End-Point`)))
+Speciesuseaverage <- final %>% group_by(Pasture,Transect, `Species/Category Name`) %>% summarize(count = n(), mean = round(mean(`Class End-Point`)))
 
 require(data.table)
-d <- data.table(Speciesuseaverage, key="Site")
-d.out <- d[, .SD[mean %in% tail(sort(unique(mean)), 3)], by=Site]
+d <- data.table(Speciesuseaverage, key="Transect")
+d.out <- d[, .SD[mean %in% tail(sort(unique(mean)), 3)], by=Transect]
 setnames(d.out, old = 'mean', 'Mean Use (%)')
 setnames(d.out, old = 'count', 'Percent of Count (%)')
 write.csv(x = d.out, file = paste(path2, "AllSpeciesUse.csv",sep = ""), row.names=FALSE)
 
 # --------------------------------------------------------Percentage of Use by Pasture ------------------------------------------------------
-pasture_average <- useaverage %>% group_by(Pasture) %>% summarize(year = round(mean(`Percent Ungrazed Utilization`))) 
+pasture_average <- useaverage %>% group_by(Year,Pasture) %>% summarize(year = round(mean(`Percent Ungrazed Utilization`))) 
 data.table::setnames(pasture_average, old = "year", gsub("[/]", "", year))
 write.csv(x = pasture_average, file = paste(path2, "PastureUse.csv",sep = ""), row.names=FALSE)
 
 # ------------------------------------ Average use for the top three most common species in each pasture ------------------------------------
-group_by(Speciesuseaverage,Site) %>% 
-  mutate(pmean=(count/100)*mean("Mean Use"))
+group_by(Speciesuseaverage,Transect) %>% 
+  mutate(pmean=(count/100)*mean(mean))
 
 PastureSpeciesUse <- final %>% group_by(Pasture, `Species/Category Name`) %>% summarize(count = n(), mean = round(mean(`Class End-Point`)))
 P <- data.table(PastureSpeciesUse, key="Pasture")
@@ -129,13 +158,16 @@ Y2 <- unique(uselist[[2]]$Year)
 UseEarlySeason <- uselist[[1]] %>% pivot_wider(names_from = Year, values_from = c(Month,`Percent Ungrazed Utilization`)) %>% ungroup() %>% select(-c(`Graze Class Utilization`))
 names(UseEarlySeason)[names(UseEarlySeason)%like% "Month"] <- paste0("Month of Measure ",Y1)
 names(UseEarlySeason)[names(UseEarlySeason)%like% "Percent Ungrazed"] <- paste0("% Use ",Y1)
-UseEarlySeason[names(UseEarlySeason)%like% paste0("% Use ",Y1)] <- 0
+# UseEarlySeason[names(UseEarlySeason)%like% paste0("% Use ",Y1)] <- 0
 
 UseLateSeason <- uselist[[2]] %>% pivot_wider(names_from = Year, values_from = c(Month,`Percent Ungrazed Utilization`)) %>% ungroup() %>% select(-c(`Graze Class Utilization`))
 names(UseLateSeason)[names(UseLateSeason)%like% "Month"] <- paste0("Month of Measure ",Y2)
 names(UseLateSeason)[names(UseLateSeason)%like% "Percent Ungrazed"] <- paste0("% Use ",Y2)
-UseLateSeason[names(UseLateSeason)%like% paste0("% Use ",Y2)] <- 0
+# UseLateSeason[names(UseLateSeason)%like% paste0("% Use ",Y2)] <- 0
+```
 
+
+```{r}
 # Add missing columns if necessary
 if(!paste0("Month of Measure ",Y1) %in% colnames(Use)){
   Use <- Use %>% add_column(x = c(NA))
@@ -182,7 +214,7 @@ sheet_write(Use, ss = "https://docs.google.com/spreadsheets/d/13UBBNXL4JfQbFNUmt
 Use <- as.data.frame(Use) 
 Use[is.na(Use)] <- ""
 
-xlsx::write.xlsx(Use, paste0(dirname(path.expand('~')),"/Box/1.Ruyle_lab/10. Santa Rita Experimental Range/Archives/Yearly Utilization.xlsx"), sheetName="Utilization",row.names = F,  append=F)
+xlsx::write.xlsx(Use, paste0(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Santa Rita Experimental Range/Archives/Yearly Utilization.xlsx"), sheetName="Utilization",row.names = F,  append=F)
 
 ```
 
@@ -195,7 +227,7 @@ data <- read_sheet("https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK9
 data[2,1] <- paste0(Sys.Date())
 sheet_write(data, ss = "https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing", sheet = "Info")
 
-xlsx::write.xlsx(Use, paste0(dirname(path.expand('~')),"/Box/1.Ruyle_lab/10. Santa Rita Experimental Range/Archives/percentgrassutilizationstartingin2010.xlsx"), sheetName="Info",row.names = F,  append=F)
+xlsx::write.xlsx(Use, paste0(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Santa Rita Experimental Range/Archives/percentgrassutilizationstartingin2010.xlsx"), sheetName="Info",row.names = F,  append=F)
 
 #-------------------------------------------------------------Meta data---------------------------------------------------------------
 data <- read_sheet("https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing",sheet = "Layout")
@@ -214,7 +246,7 @@ if (!any(grep(y, data$Item.Name)>1)) {
 
 sheet_write(data, ss = "https://docs.google.com/spreadsheets/d/1aJejfLTnhjisjzFHnxK94vw92s276IBTEonQqG6Kvs8/edit?usp=sharing", sheet = "Layout")
 
-xlsx::write.xlsx(Use, paste0(dirname(path.expand('~')),"/Box/1.Ruyle_lab/10. Santa Rita Experimental Range/Archives/percentgrassutilizationstartingin2010.xlsx"), sheetName="Layout",row.names = F,  append=F)
+xlsx::write.xlsx(Use, paste0(dirname(path.expand('~')),"/Box/1.Ruyle_lab/Santa Rita Experimental Range/Archives/percentgrassutilizationstartingin2010.xlsx"), sheetName="Layout",row.names = F,  append=F)
 ```
 
 
