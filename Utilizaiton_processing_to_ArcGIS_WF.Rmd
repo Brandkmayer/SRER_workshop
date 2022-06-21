@@ -111,9 +111,9 @@ write.csv(x = useaverage, file = paste(path2, "SiteUse.csv",sep = ""), row.names
 
 base<-read_csv(paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Utilization/TransectUTM.csv", sep="")) %>% select(-"Shape_1")
 useaverage2 <- useaverage
-# useaverage2$tran_num<- paste0(useaverage2$Pasture,useaverage2$Transect)
-# useaverage2$tran_num[str_detect(useaverage2$tran_num, "^6E")]<-paste0(useaverage2$tran_num,"_")
-# useaverage2$tran_num[str_detect(useaverage2$tran_num, "^12E")]<-paste0(useaverage2$tran_num,"_")
+useaverage2$tran_num<- paste0(useaverage2$Pasture,useaverage2$Transect)
+useaverage2$tran_num[str_detect(useaverage2$tran_num, "^6E")]<-paste0(useaverage2$tran_num,"_")
+useaverage2$tran_num[str_detect(useaverage2$tran_num, "^12E")]<-paste0(useaverage2$tran_num,"_")
 base<- base %>% left_join(useaverage2 %>% ungroup() %>% select(tran_num,"GY2022"= `Percent Ungrazed Utilization`), by="tran_num")
 write.csv(as.data.frame(base),paste0(path2,"TransectU.csv"),row.names = F)
 # -------------------------------------------------Average use for each species per transect ------------------------------------------------
