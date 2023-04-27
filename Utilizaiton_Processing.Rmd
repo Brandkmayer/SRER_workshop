@@ -34,42 +34,6 @@ path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/U
 
 ```
 
-# Retrieve files from folders
- - if files contain metadata inside the csv USE THIS!
-```{r, echo=FALSE,warning=FALSE,results=FALSE,message=FALSE}
-# filedcsv <- list.files(path = path, pattern = "*.csv", full.names = T, all.files = TRUE, recursive = TRUE) %>%
-#   lapply(function(x) {read_csv(x, col_names = TRUE)}) %>%
-#   lapply(setNames, colnames)
-```
-
-# Make the final data frame for data wrangling
-Includes a lot of minor adjustments 
-```{r}
-final <- lapply(seq_along(filedcsv), function(i){
-  y <- as.data.frame(filedcsv[[i]][c(1,2,3), ])
-  x <- as.data.frame(filedcsv[[i]][-c(1,2,3), ])
-  # x$Date <- lubridate::ymd(strsplit(basename(names(tbl[i])), "[_]")[[1]][1])
-  x$Date <- lubridate::mdy(strsplit(y[2,1], "[:]")[[1]][2])
-  x$Year <- lubridate::year(x$Date)
-  x$Month <- lubridate::month(x$Date)
-  x$Pasture <- as.character(str_remove_all(strsplit(strsplit(y[1,1], "[-]")[[1]][1],"[>]")[[1]][3],"[ ]"))
-  ptrn <- paste0(unique(x$Pasture), collapse = '|')
-  x$Transect <- as.character(str_remove_all(str_remove_all(strsplit(y[1,1], "[-]")[[1]][2],ptrn), " ")) 
-  return(x)})  %>% bind_rows(.id = "id")
-#Old script for getting assigning pasture from sites
-# final$Pasture <- final$Site %>% 
-#   gsub('(C).*', '\\1', .) %>%
-#   gsub('(A).*', '\\1', .) %>% 
-#   gsub('(S).*', '\\1', .) %>% 
-#   gsub('(N).*', '\\1', .) %>% 
-#   gsub('(E).*', '\\1', .) %>% 
-#   gsub('(D).*', '\\1', .) %>% 
-#   gsub('(B).*', '\\1', .) %>% 
-#   gsub('(M).*', '\\1', .) %>%
-#   gsub('(o).*', '', .)
-
-path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Utilization/Processed_data/", year, sep="")
-```
 
 # Retrieve bulk export files and cleaning
 ```{r}
