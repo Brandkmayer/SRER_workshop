@@ -89,7 +89,7 @@ write.csv(x = useaverage, file = paste(path2, "SiteUse.csv",sep = ""), row.names
 
 base<-read_csv(paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Utilization/TransectUTM.csv", sep="")) %>% select(-"Shape_1")
 useaverage2 <- useaverage
-useaverage2$tran_num<- paste0(useaverage2$Pasture,useaverage2$Transect)
+useaverage2$tran_num<- paste0(useaverage2$Transect)
 useaverage2$tran_num[str_detect(useaverage2$tran_num, "^6E")]<-paste0(useaverage2$tran_num,"_")
 useaverage2$tran_num[str_detect(useaverage2$tran_num, "^12E")]<-paste0(useaverage2$tran_num,"_")
 base<- base %>% left_join(useaverage2 %>% ungroup() %>% select(tran_num,"GY2022"= `Percent Grazed Utilization (Grazed/Ungrazed)`), by="tran_num")
@@ -107,7 +107,7 @@ setnames(d.out, old = 'count', 'Percent of Count (%)')
 write.csv(x = d.out, file = paste(path2, "AllSpeciesUse.csv",sep = ""), row.names=FALSE)
 
 # --------------------------------------------------------Percentage of Use by Pasture ------------------------------------------------------
-pasture_average <- useaverage %>% group_by(Year,Pasture) %>% summarize(year = round(mean(`Percent Grazed Utilization (Grazed/Ungrazed)`))) 
+pasture_average <- useaverage %>% group_by(Pasture) %>% summarize(year = round(mean(`Percent Grazed Utilization (Grazed/Ungrazed)`))) 
 data.table::setnames(pasture_average, old = "year", gsub("[/]", "", year))
 write.csv(x = pasture_average, file = paste(path2, "PastureUse.csv",sep = ""), row.names=FALSE)
 
