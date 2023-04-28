@@ -1,7 +1,7 @@
 ---
 title: "SRER_Utilization"
 author: "Brandon Mayer"
-date: "4/1/2020"
+date: "`r Sys.Date()`"
 output: html_document
 ---
 
@@ -16,7 +16,7 @@ library(data.table)
 ```
 ### Enter the year you're interested in working on
 ```{r, echo=FALSE}
-year <- 'GY2022/' 
+year <- 'GY2023/' 
 ```
 
 # Collect original column names to add later 
@@ -37,21 +37,39 @@ path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/U
 
 # Retrieve bulk export files and cleaning
 ```{r}
+sheets<-readxl::excel_sheets(path = list.files(path = path, full.names = T, all.files = TRUE, recursive = TRUE))
 filedxlsx <- list.files(path = path, full.names = T, all.files = TRUE, recursive = TRUE) %>%
-  lapply(function(x) {readxl::read_excel(x, col_names = TRUE)})
+  lapply(function(x) {readxl::read_excel(x, col_names = TRUE, sheet =sheets[3])})
 
 final <- rbindlist(filedxlsx) %>% select(Date,Ancestry, "Transect"=SiteID,SpeciesSymbol, `Species/Category Name` = SpeciesName, SampleNumber,cValueCommon,cValue2Common,`Class End-Point` = nValue)
 final$cValue2Common[is.na(final$cValue2Common)] <- "No Cover"
-final$Pasture <- as.character(str_remove_all(str_split_fixed(final$Ancestry, ">",4)[,4],"[ ]"))
+final$Pasture <- as.character(str_remove_all(str_split_fixed(final$Ancestry, ">",4)[,2],"[ ]"))
 final$Date <- lubridate::mdy(final$Date) 
 final <- final %>% drop_na(`Class End-Point`) %>% mutate("Month" = lubridate::month(Date),"Year" = lubridate::year(Date))
-final <- final %>% group_by(Pasture) %>% filter(Year == max(Year))
+final <- final %>% filter(Date>=floor_date(max(final$Date), 'year') %m-% months(3)& Date <= max(final$Date))
 final <-final %>% mutate(`Class End-Point` = case_when(`Class End-Point`==0~0,
                                                `Class End-Point`==5~10,
                                                `Class End-Point`==20~30,
                                                `Class End-Point`==40~50,
                                                `Class End-Point`==60~70,
                                                `Class End-Point`==80~90))
+filedxlsx <- list.files(path = path, full.names = T, all.files = TRUE, recursive = TRUE) %>%
+  lapply(function(x) {readxl::read_excel(x, col_names = TRUE, sheet =sheets[1])})
+
+final2 <- rbindlist(filedxlsx) %>% select(Date,Ancestry, "Transect"=SiteID,SpeciesSymbol, `Species/Category Name` = SpeciesName, SampleNumber,cValueCommon,cValue2Common,`Class End-Point` = nValue)
+final2$cValue2Common[is.na(final2$cValue2Common)] <- "No Cover"
+final2$Pasture <- as.character(str_remove_all(str_split_fixed(final2$Ancestry, ">",4)[,2],"[ ]"))
+final2$Date <- lubridate::mdy(final2$Date) 
+final2 <- final2 %>% drop_na(`Class End-Point`) %>% mutate("Month" = lubridate::month(Date),"Year" = lubridate::year(Date))
+final2 <- final2 %>% filter(Date>=floor_date(max(final2$Date), 'year') %m-% months(3)& Date <= max(final2$Date))
+final2 <-final2 %>% mutate(`Class End-Point` = case_when(`Class End-Point`==0~0,
+                                               `Class End-Point`==5~10,
+                                               `Class End-Point`==20~30,
+                                               `Class End-Point`==40~50,
+                                               `Class End-Point`==60~70,
+                                               `Class End-Point`==80~90))
+
+final <- rbind(final,final2);rm(final2)
 ```
 
 # Table building
@@ -65,7 +83,7 @@ Includes:
 # ---------------------------------------------Percentage Use by site to join with Arcgis site use.----------------------------------------- 
 # colnames(final)[4] <- "Class End-Point"
 final$Transect <- str_replace(final$Transect,"D","")
-useaverage <- final %>% group_by(Year,Pasture, Month,Transect=as.numeric(Transect)) %>%
+useaverage <- final %>% group_by(Year,Pasture, Month,Transect=as.character(Transect)) %>%
   summarize(`Percent Grazed Utilization (Grazed/Ungrazed)` = round(79.9451-(0.8705*sum(`Class End-Point` < 1)), digits = 1),
             `Graze Class Utilization (Grazed Class)` = round(sum(`Class End-Point`)/n(), digits = 1)) %>% 
   mutate(`Percent Grazed Utilization (Grazed/Ungrazed)` = case_when(`Percent Grazed Utilization (Grazed/Ungrazed)` < 0 ~ 0,
@@ -95,7 +113,7 @@ setnames(d.out, old = 'count', 'Percent of Count (%)')
 write.csv(x = d.out, file = paste(path2, "AllSpeciesUse.csv",sep = ""), row.names=FALSE)
 
 # --------------------------------------------------------Percentage of Use by Pasture ------------------------------------------------------
-pasture_average <- useaverage %>% group_by(Year,Pasture) %>% summarize(year = round(mean(`Percent Ungrazed Utilization`))) 
+pasture_average <- useaverage %>% group_by(Year,Pasture) %>% summarize(year = round(mean(`Percent Grazed Utilization (Grazed/Ungrazed)`))) 
 data.table::setnames(pasture_average, old = "year", gsub("[/]", "", year))
 write.csv(x = pasture_average, file = paste(path2, "PastureUse.csv",sep = ""), row.names=FALSE)
 
