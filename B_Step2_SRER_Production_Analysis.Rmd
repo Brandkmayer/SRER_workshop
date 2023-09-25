@@ -12,12 +12,16 @@ library(googlesheets4)
 
 ```
 
-Assign the location of where the .xlsx files were sheeted or if "finalfolder" is still in global environment continue to 
+Assign the location of where the .xlsx files were sheeted or if "sheetedfolder" is still in global environment continue to 
 "Comparative Yield" step  
 
 ```{r}
-# finalfolder <- "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRER2021_sheeted"
-# finalfolder <- 
+# sheetedfolder <- "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRER2021_sheeted"
+# sheetedfolder <- readline()
+sheetedfolder <- path2
+results <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Production/Results/", year, sep="");dir.create(path = paste0(results))
+
+
 ```
 
 ----------------------------------------------------------------- CY ----------------------------------------------------------------
@@ -25,80 +29,121 @@ You are going to be requested to grant "Tidyverse API Package" permissions when 
   -   "See, edit, create, and delete your spreadsheets in Google Drive"
 
 ```{r}
-weights <- read_sheet("https://docs.google.com/spreadsheets/d/1iXcXoq1VtUhDNpuGBO6NRTbW9fhEFFdH4V2-bRrQAvE/edit?usp=sharing")
+weights <- read_sheet("https://docs.google.com/spreadsheets/d/1iXcXoq1VtUhDNpuGBO6NRTbW9fhEFFdH4V2-bRrQAvE/edit?usp=sharing",sheet = year)
 ```
 
 Then run the chunk below to load the data into the "Weight" object.
 
 ```{r}
-weights <- read_sheet("https://docs.google.com/spreadsheets/d/1iXcXoq1VtUhDNpuGBO6NRTbW9fhEFFdH4V2-bRrQAvE/edit?usp=sharing")
+weights <- read_sheet("https://docs.google.com/spreadsheets/d/1iXcXoq1VtUhDNpuGBO6NRTbW9fhEFFdH4V2-bRrQAvE/edit?usp=sharing",sheet = year)
 # Incase of formating errors Pasture is fixed as character data
 weights$Pasture <- as.character(weights$Pasture) 
-weights$Transect <- as.character(weights$Transect)
+weights$Site <- as.character(weights$Site)
 weights$`Wet(g)` <- as.double(weights$`Wet(g)`)
 weights
 # Creates the formula
-(sumarWeights<-weights %>% group_by(Pasture, Transect)%>% summarise(formula =(lm(c(0,Value)~c(0,BagNum)))$coefficients[-1]));sumarWeights$Transect <- as.character(sumarWeights$Transect)
+(sumarWeights<-weights %>% group_by(Pasture, Site)%>% summarise(formula =(lm(c(0,Value)~c(0,BagNum)))$coefficients[-1]));sumarWeights$Site <- as.character(sumarWeights$Site)
 ```
 -----------------------------------------------------------------CY-----------------------------------------------------------------
 Load in comparative yield data
 ```{r}
-allCY <- list.files(path = finalfolder, pattern = "CY",full.names = T)
+allCY <- list.files(path = sheetedfolder, pattern = "CY",full.names = T)
 
 for (i in allCY) {
   file <- read.csv(i)
-  base<- basename(i) # pasture_transect_method.csv
-  file$Pasture <- gsub("_.*","",base)
-  file$Transect <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
-  file<- file %>% select(Pasture, Transect, Rank) # once run all "Rank" columns will be changed in the sheeted copies
+  base<- basename(i) # date_pasture_transect_method.csv
+  file$Date <- gsub("_.*","",base)
+  file$Pasture <- stringr::str_split(base,"_",3)[[1]][2]
+  file$Site <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Date, Pasture, Site, Transect, SampleNumber, nValue) # once run all "Rank" columns will be changed in the sheet-ed copies
   write.csv(file,i,row.names = F)
 }
 CYdf <- data.table::rbindlist(lapply(allCY, data.table::fread))
 
-TranCY <- transform(merge(CYdf, sumarWeights, by=c("Pasture", "Transect")), 
-                    Dry.wt = Rank * formula) %>% na.omit() 
-Production<- TranCY %>% group_by(Pasture, Transect)%>% summarise("Production_kg/ha" = (mean(Dry.wt)*62.5), "Production_lbs/ac" = (round(mean(Dry.wt)*62.5*.9,digits = 2)))
+TranCY <- transform(merge(CYdf, sumarWeights, by=c("Pasture", "Site")), 
+                    Dry.wt = nValue * formula) %>% na.omit() 
+Production<- TranCY %>% group_by(Pasture, Site)%>% summarise("Production_kg/ha" = (mean(Dry.wt)*62.5), "Production_lbs/ac" = (round(mean(Dry.wt)*62.5*.9,digits = 2)))
 
 # Where do you plan on  storing the results 
-ResultFolder <- paste0(dirname(finalfolder),"/Results");dir.create(ResultFolder);dir.create(paste0(ResultFolder,'/',year))
-
-write.csv(Production, paste0(ResultFolder,"/",year,"/Production.csv"))
+write.csv(Production, paste0(results,"/Production.csv"))
 ```
------------------------------------------------------------------DWR-----------------------------------------------------------------
+------------------------------------------------------------------------------ DWR --------------------------------------------------------------------
 
 ```{r}
 
 # allDWR <- list.files(path = "C:/Users/brand/Dropbox/Project_Data/SRER/Production/SRER2020_sheeted", pattern = "DWR",full.names = T)
-allDWR <- list.files(path = finalfolder, pattern = "DWR",full.names = T)
+allDWR <- list.files(path = sheetedfolder, pattern = "DWR",full.names = T)
 
 for (i in allDWR) {
   file <- read.csv(i)
   base<- basename(i) # pasture_transect_method.csv
-  file$Pasture <- gsub("_.*","",base)
-  file$Transect <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
-  file<- file %>% select(Pasture, Transect, Species.Category.Name, Species.Category.Code, Rank)
+  file$Date <- gsub("_.*","",base)
+  file$Pasture <- stringr::str_split(base,"_",3)[[1]][2]
+  file$Site <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Date, Pasture, Site, Transect, SampleNumber, SpeciesName, SpeciesSymbol, nValue)
   write.csv(file,i,row.names = F)
 }
 
 
 DWRdf <- data.table::rbindlist(lapply(allDWR, data.table::fread))
-SpecList <- read.csv("C:/Users/brand/Dropbox/Project_Data/SRER/Production/Specieslist.csv")
-
-TranDWR <- merge(DWRdf, SpecList, by=c("Species.Category.Name"))
-  TranDWR$Rank[TranDWR$Rank == 1] <- 7
-  TranDWR$Rank[TranDWR$Rank == 2] <- 2
-  TranDWR$Rank[TranDWR$Rank == 3] <- 1
-  TranDWR$Rank <- as.numeric(TranDWR$Rank)
-GroupCounts<- TranDWR %>% group_by(Pasture, Transect, Plant_type, Native) %>% summarise("TotalCounts" = sum(Rank))
-
-CountPercentlong<- GroupCounts %>% group_by(Pasture, Transect) %>%mutate("Percent"=(TotalCounts/sum(TotalCounts))) %>% subset(Plant_type == "Perennial Grasses"|Plant_type == "Annual Grasses") %>% select(!TotalCounts)
-CountPercentwide<-CountPercentlong %>% spread(Native, Percent) %>% replace(is.na(.), 0) %>% mutate(Total = Native+Introduced) %>% split(unique(CountPercent$Plant_type))%>% reduce(left_join, by = c("Pasture","Transect"))%>% select(Pasture,Transect,"TotalAAGG" =Total.x,"IntroducedPPGG"=Introduced.y,"NativePPGG"=Native.y,"TotalPPGG"=Total.y)
-write.csv(CountPercentwide, paste0(ResultFolder,"/",year,"/PerennialgrassCOMP.csv"))
 ```
------------------------------------------------------ Finished Product-------------------------------------------------------------
+--------------------------------------------------------------------------- CY x DWR ---------------------------------------------------------------------
+Combine dry weight ranks and comparative yield. This pairs the composition from DWR with the yield providing a composition of biomass observed at the site. 
 
 ```{r}
-final <-left_join(Production,CountPercentwide, by = c("Pasture", "Transect")) %>% select(Pasture, Transect, TotalPPGG,NativePPGG,IntroducedPPGG,TotalAAGG,`Production_lbs/ac`)
-write.csv(final, paste0(ResultFolder,"/",year,"/final_results.csv"), row.names = F)
+CYDW <- TranCY %>% select(Pasture, Site,Transect,SampleNumber, Dry.wt)
+CYDWR <- DWRdf %>% full_join(CYDW, by=c("Pasture","Site","Transect","SampleNumber"))
+
+CYDWR$nValue[CYDWR$nValue == 1] <- .7
+CYDWR$nValue[CYDWR$nValue == 2] <- .2
+CYDWR$nValue[CYDWR$nValue == 3] <- .1
+CYDWR$nValue <- as.numeric(CYDWR$nValue)
+CYDWR <- CYDWR %>% mutate(Spec.Dry.wt = nValue*Dry.wt)
+
+# Species list is from the USDA PLANTS list. The file includes family, growth habit and whether the species is native. Additional species can be added if they are not present. Follwo path and edit directly into the file if necessary. 
+SpecList <- read.csv(paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/Specieslist.csv", sep="")) 
+CYDWR <-CYDWR %>% left_join(SpecList, by=c("SpeciesName", "SpeciesSymbol"))
+CYDWR[
+  order( CYDWR$Date, CYDWR$Pasture ,CYDWR$Site ,CYDWR$Transect ,CYDWR$SampleNumber),
+] 
+CYDWR <- CYDWR %>% mutate(Native = case_when(str_detect(Native.Status,"(N)")~"Native",
+                                    str_detect(Native.Status,"(I)")~"Introduced"),
+                 Grammoid = case_when(str_detect(Growth.Habit,"Graminoid")~"Grass",
+                                      TRUE~"NotGrass"))
+# Production template used for building rotation will use a combination of composition data as well as the literal breakdown of production between each group. 
+Comp <- CYDWR %>% group_by(Pasture, Site, Native, Grammoid) %>% summarize(Biomass=sum(Spec.Dry.wt))%>% group_by(Pasture, Site)%>% mutate(Percent = Biomass/sum(Biomass,na.rm = T))
+Comp <- Comp[!is.na(Comp$Biomass),]
+Comp <- Comp %>% mutate(ProductionType = paste0(Native,Grammoid))%>% ungroup() %>% select(Pasture, Site,ProductionType, Percent)%>% spread(ProductionType, Percent)%>%replace(is.na(.), 0)%>% mutate(TotalPerennialGrassComp = round(IntroducedGrass+NativeGrass,digits = 2),NativeGrass = round(NativeGrass,digits = 2),IntroducedGrass = round(IntroducedGrass,digits = 2)) %>% select(Pasture,Site,TotalPerennialGrassComp,"NativeGrassComp"=NativeGrass,"IntroducedGrassComp" =IntroducedGrass)
+
+Biomass <- CYDWR %>% group_by(Pasture, Site, Native, Grammoid) %>%  summarise("Production_kg/ha" = (sum(Spec.Dry.wt,na.rm = T)/100*62.5), "Production_lbs/ac" = (round(sum(Spec.Dry.wt,na.rm = T)/100*62.5*.9,digits = 2)))
+Biomass <- Biomass[!is.na(Biomass$Native),]
+Biomass <- Biomass %>% mutate(ProductionType = paste0(Native,Grammoid))%>% ungroup() %>% select(Pasture, Site,ProductionType, `Production_lbs/ac`)%>% spread(ProductionType, `Production_lbs/ac`)%>%replace(is.na(.), 0)%>% mutate(Total = NativeGrass+IntroducedGrass+NativeNotGrass,TotalPPGG=NativeGrass+IntroducedGrass) %>% select(Pasture,Site,"TotalForage"=Total,TotalPPGG,"NativePPGG"=NativeGrass,"IntroducedPPGG"=IntroducedGrass)
+
+final <-left_join(Comp,Biomass, by = c("Pasture", "Site")) %>% select(Pasture, Site, TotalForage,TotalPerennialGrassComp,NativeGrassComp,IntroducedGrassComp,TotalPPGG,NativePPGG,IntroducedPPGG)
+write.csv(final, paste0(results,"/final_results.csv"), row.names = F)
+
+CYDWR %>% group_by(Pasture, Site, SpeciesName) %>%  summarise("Production_kg/ha" = (sum(Spec.Dry.wt,na.rm = T)/100*62.5), "Production_lbs/ac" = (round(sum(Spec.Dry.wt,na.rm = T)/100*62.5*.9,digits = 2)))
 ```
+-------------------------------------------------------------------------- Frequency ----------------------------------------------------------------
+
+```{r}
+allFreq <- list.files(path = sheetedfolder, pattern = "Freq",full.names = T)
+
+for (i in allFreq) {
+  file <- read.csv(i)
+  base<- basename(i) # pasture_transect_method.csv
+  file$Date <- gsub("_.*","",base)
+  file$Pasture <- stringr::str_split(base,"_",3)[[1]][2]
+  file$Site <- stringr::str_match(base, ".*_([^\\.]*)\\_.*")[2]
+  file<- file %>% select(Date, Pasture, Site, Transect, SampleNumber, SpeciesName, SpeciesSymbol, nValue)
+  write.csv(file,i,row.names = F)
+}
+
+
+Freqdf <- data.table::rbindlist(lapply(allFreq, data.table::fread))
+Freqdf <-Freqdf %>% group_by(Pasture, Site, SpeciesName) %>% summarise(Count = n())
+
+write.csv(Freqdf, paste0(results,"/Frequency.csv"), row.names = F)
+```
+
 

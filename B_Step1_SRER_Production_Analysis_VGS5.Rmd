@@ -1,0 +1,100 @@
+---
+title: "Production Analysis xlx Sheeting"
+author: "Brandon Mayer"
+date: "`r Sys.Date()`"
+output: html_document
+---
+Rebuilding the production analysis. VGS export is a combined file of every year production was collected. This requires a compelete rewrite.
+File needs to be pulled in -> proper year selected ->  sheets reorganized. 
+
+```{r setup, include=FALSE,echo=FALSE,}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+In preparation, store the VGS5 Bulk export in the Production -> RAW_Data folder under the year data was collected. Exp "SRERexl2022"
+  -   the name of the file will not be important for this process. 
+
+```{r setup, include=FALSE,echo=FALSE,warning=FALSE}
+# File system setup
+year <-readline() 
+path <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Production/RAW_Data/", paste0("SRERexl",year), sep="")
+path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Production/Sheeted_Data/", paste0("SRER",year,"_sheeted"), sep="");dir.create(path = paste0(path2))
+
+```
+
+Combined, and splits xlsx into CSVs for analysis
+
+```{r,echo=FALSE,warning=FALSE}
+path_to_xlsx <- list.files(path,recursive = F, include.dirs = F, pattern = ".xlsx",full.names = T) #[2] 
+read_excel_allsheets <- function(filename, tibble = FALSE) {
+    # I prefer straight data.frames
+    # but if you like tidyverse tibbles (the default with read_excel)
+    # then just pass tibble = TRUE
+    sheets <- readxl::excel_sheets(filename)
+    x <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
+    if(!tibble) x <- lapply(x, as.data.frame)
+    names(x) <- sheets
+    x
+}
+
+Sheeted_DF<- read_excel_allsheets(path_to_xlsx)
+
+Sheeted_DF<-lapply(Sheeted_DF, function(x) {  
+   data.frame(x) %>%
+     mutate(Date = lubridate::mdy(Date), 
+            Year = lubridate::year(Date),
+            Pasture = gsub(" ","",gsub("Site:","", sub('-.*', '\\1',sub('.*>', '\\1', Ancestry)), fixed = TRUE)),
+            Base = paste0(Pasture,"_",gsub("SRER ","",SiteID)))%>% filter(Year == as.numeric(year))})
+```
+
+
+```{r}
+
+sheet_names <- names(Sheeted_DF)
+# sheet_names <- readxl::excel_sheets(path_to_xlsx)[2:4]
+# base <- gsub("\\..*","",basename(path_to_xlsx))
+for (j in sheet_names) {
+  # j <- sheet_names[2]
+  data <- Sheeted_DF[[j]]
+  if (j == "Frequency (by quadrat)") {
+    name <- "Freq"
+  }else if (j == "Comparative Yield") {
+    name <- "CY"
+  }else if (j == "Point Ground Cover") {
+    name <- "PGC"
+  }else{
+    name <- "DWR"
+  }
+  data <- data %>% group_split(Base)
+  for (n in 1:length(data)) {
+    date <- unique(data[[n]]$Date)
+    Base <- unique(data[[n]]$Base)
+      write.csv(data[[n]], file=paste0(path2,"/",date,"_",Base,"_",name,".csv"))
+  }
+}
+
+list.files(path2)
+```
+
+------------------------------------------------------------------------------STOP------------------------------------------------------------------------
+
+<!-- If sites are split using multiple tablets and not merged prior to analysis use the following scrip to rbind. Ignore otherwise.  -->
+<!--   -   Identifies which files are from the same site.  -->
+<!--   -   Rbinds and rewrites files to new folder.  -->
+<!-- ```{r} -->
+<!-- SheetedFiles<- list.files(finalfolder,full.names = T) -->
+<!-- sites <-unique(gsub(".1\\b","", unique(unlist(lapply(stringr::str_split(gsub(".csv","",list.files(finalfolder)), "_"), FUN = `[`, 3))))) -->
+<!-- Methods<- unique(unlist(lapply(stringr::str_split(gsub(".csv","",list.files(finalfolder)), "_"), FUN = `[`, 4))) -->
+<!-- for (s in sites) { -->
+<!--   FocusedFiles <- SheetedFiles[stringr::str_detect(SheetedFiles, s)] -->
+<!--   for (m in Methods) { -->
+<!--       SiteMethodFiles <- FocusedFiles[stringr::str_detect(FocusedFiles, m)] -->
+<!--       date<- unique(unlist(lapply(stringr::str_split(gsub(".csv","",basename(SiteMethodFiles)), "_"), FUN = `[`, 1))) -->
+<!--       BoundSite <-data.table::rbindlist(lapply(SiteMethodFiles, read.csv)) %>% select(-X) -->
+<!--       BoundSite[order(BoundSite$Transect,BoundSite$Sample)] -->
+<!--       write.csv(BoundSite,file=paste0(finalfolder,"/",date,"_",s,"_",m,".csv")) -->
+<!--   } -->
+<!-- } -->
+<!-- ``` -->
+

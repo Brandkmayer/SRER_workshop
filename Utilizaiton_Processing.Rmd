@@ -89,7 +89,7 @@ write.csv(x = useaverage, file = paste(path2, "SiteUse.csv",sep = ""), row.names
 
 base<-read_csv(paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Utilization/TransectUTM.csv", sep="")) %>% select(-"Shape_1")
 useaverage2 <- useaverage
-useaverage2$tran_num<- paste0(useaverage2$Transect)
+useaverage2$tran_num<- paste0(uuseaverage2$Transect)
 useaverage2$tran_num[str_detect(useaverage2$tran_num, "^6E")]<-paste0(useaverage2$tran_num,"_")
 useaverage2$tran_num[str_detect(useaverage2$tran_num, "^12E")]<-paste0(useaverage2$tran_num,"_")
 base<- base %>% left_join(useaverage2 %>% ungroup() %>% select(tran_num,"GY2022"= `Percent Grazed Utilization (Grazed/Ungrazed)`), by="tran_num")
@@ -141,7 +141,7 @@ rmarkdown::render(input = paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Pr
 Use <- read_sheet("https://docs.google.com/spreadsheets/d/13UBBNXL4JfQbFNUmtU0sdcR-s1p4nayElb7o1Emh6oQ/edit?usp=sharing")
 Use$Pasture <-as.character(Use$Pasture) 
 Use$`Transect Name` <-as.character(Use$`Transect Name`)
-colnames(Use)[2] <- "Transect"
+# colnames(Use)[2] <- "Transect"
 
 # Split the df by year, correct naming for months and use, and change negative use values to "0"
 uselist <- useaverage %>% split(useaverage$Year)
