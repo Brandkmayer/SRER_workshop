@@ -12,12 +12,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-In preparation, store the VGS5 Bulk export in the Production -> RAW_Data folder under the year data was collected. Exp "SRERexl2022"
+In preparation, store the VGS5 Bulk export in the Production -> "RAW_Data folder" under the year data was collected. Example: "SRERexl2022"
   -   the name of the file will not be important for this process. 
 
 ```{r setup, include=FALSE,echo=FALSE,warning=FALSE}
 # File system setup
-year <-readline() 
+year <-readline() #just the year. Example: 2023
 path <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Production/RAW_Data/", paste0("SRERexl",year), sep="")
 path2 <- paste(dirname(path.expand('~')),"/Box/1.Ruyle_lab/1.Project_Data/SRER/Production/Sheeted_Data/", paste0("SRER",year,"_sheeted"), sep="");dir.create(path = paste0(path2))
 

@@ -48,7 +48,6 @@ weights
 Load in comparative yield data
 ```{r}
 allCY <- list.files(path = sheetedfolder, pattern = "CY",full.names = T)
-
 for (i in allCY) {
   file <- read.csv(i)
   base<- basename(i) # date_pasture_transect_method.csv
@@ -62,12 +61,12 @@ CYdf <- data.table::rbindlist(lapply(allCY, data.table::fread))
 
 TranCY <- transform(merge(CYdf, sumarWeights, by=c("Pasture", "Site")), 
                     Dry.wt = nValue * formula) %>% na.omit() 
-Production<- TranCY %>% group_by(Pasture, Site)%>% summarise("Production_kg/ha" = (mean(Dry.wt)*62.5), "Production_lbs/ac" = (round(mean(Dry.wt)*62.5*.9,digits = 2)))
+(Production<- TranCY %>% group_by(Pasture, Site)%>% summarise("Production_kg/ha" = (mean(Dry.wt)*62.5), "Production_lbs/ac" = (round(mean(Dry.wt)*62.5*.9,digits = 2))))
 
 # Where do you plan on  storing the results 
 write.csv(Production, paste0(results,"/Production.csv"))
 ```
------------------------------------------------------------------------------- DWR --------------------------------------------------------------------
+----------------------------------------------------------------------------- DWR ------------------------------------------------------------------
 
 ```{r}
 
@@ -119,7 +118,7 @@ Biomass <- CYDWR %>% group_by(Pasture, Site, Native, Grammoid) %>%  summarise("P
 Biomass <- Biomass[!is.na(Biomass$Native),]
 Biomass <- Biomass %>% mutate(ProductionType = paste0(Native,Grammoid))%>% ungroup() %>% select(Pasture, Site,ProductionType, `Production_lbs/ac`)%>% spread(ProductionType, `Production_lbs/ac`)%>%replace(is.na(.), 0)%>% mutate(Total = NativeGrass+IntroducedGrass+NativeNotGrass,TotalPPGG=NativeGrass+IntroducedGrass) %>% select(Pasture,Site,"TotalForage"=Total,TotalPPGG,"NativePPGG"=NativeGrass,"IntroducedPPGG"=IntroducedGrass)
 
-final <-left_join(Comp,Biomass, by = c("Pasture", "Site")) %>% select(Pasture, Site, TotalForage,TotalPerennialGrassComp,NativeGrassComp,IntroducedGrassComp,TotalPPGG,NativePPGG,IntroducedPPGG)
+final <-left_join(Comp,Biomass, by = c("Pasture", "Site")) %>% select(Pasture, Site,TotalPerennialGrassComp,NativeGrassComp,IntroducedGrassComp,TotalForage,TotalPPGG,NativePPGG,IntroducedPPGG)
 write.csv(final, paste0(results,"/final_results.csv"), row.names = F)
 
 CYDWR %>% group_by(Pasture, Site, SpeciesName) %>%  summarise("Production_kg/ha" = (sum(Spec.Dry.wt,na.rm = T)/100*62.5), "Production_lbs/ac" = (round(sum(Spec.Dry.wt,na.rm = T)/100*62.5*.9,digits = 2)))
